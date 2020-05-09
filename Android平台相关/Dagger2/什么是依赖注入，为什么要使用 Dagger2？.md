@@ -96,5 +96,15 @@ LoginPresenter presenter = new LoginPresenter(userManager);
 1. 这违反了设计原则的 [迪米特原则（知道最少）]() ：一个类应该只关心它所关心的，只与它密切的类交流。
 2. 可以预见的是上面有很多类，App 其他地方也需要它们：OKHttp、Retrofit、SharedPreferences、UserManger、也有可能在重用 Presenter 逻辑的情况下，其他地方也需要 LoginPresenter。像上面的使用方式，那么在其他地方也就需要 new 出这些对象，造成大量的代码重复，和不必须的对象生成。
 
+要解决上面的问题，我们的**依赖注入框架**就登场了，想一想过往的开发你是否用到过依赖注入框架......，我保证你肯定用过，**ButterKnife** 依赖注入框架，只不过它是专门关注与 View 对的注入的。我们今天要说的依赖注入框架是应用于普遍对象的。了解更多的人可能知道，后端开发中依赖注入框架是比不可少的，**Spring IOC** 便是。
+
+那么什么是依赖注入框架呢？很容易理解，它就是帮助我们从手动注入到自动完成注入（当然这需要一些配置），你就把它想象成以工厂类，这个工厂类可以给你提供你要的 Dependency，并且当 Dependency 创建时会自动创建 Dependency 所依赖的对象，依次类推。当你需要的 Dependency 创建完后就会注入的你当前的类中。刚开始接触依赖注入框架，你先不用了解框架是怎么创建依赖对象....依赖对象的依赖对象。生成对象的是一个工厂类，这个工厂类帮我们完成了在创建依赖对象过程中碰到的任何对象，记住它就是个工厂类。
+
+前面说了真么多，我们要讲的依赖注入框架正真要登场了：**Dagger2** （我不知道你有么有注入在 ButterKnife 的github官网中 Jake Wharton 大神提到了 Dagger2，因为像 ButterKnife 的框架是参考 Dagger2 完成的。）Dagger2 是一个编译时的依赖注入框架，它不使用任何反射和运行时字节码生成技术，所有的分析都是在编译时完成，并通过生成 Java 代码来完成依赖注入。
+
+[目前 Dagger2 已经被 Google 官方钦定了，构建一个好的应用的最佳做法之一就是使用 Dgger2 来进行依赖对象的管理。](https://developer.android.com/training/dependency-injection) 所有我们从下一篇就开始一起来了解 Dagger2 的使用。
+
+
+
 
 
