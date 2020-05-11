@@ -6,7 +6,7 @@
 
 下面还是通过一个例子来解释一下。我们在使用 MVP 模式的过程中，我们知道 P 层「Presenter」,现在我们的 P 层依赖 UserManger 对象
 
-<img src="/Users/austen/Desktop/interview/Android平台相关/Dagger2/Screenshot/1.png" style="zoom:33%;" />
+<img src="https://note-austen-1256667106.cos.ap-beijing.myqcloud.com/2020-05-11-153217.png" style="zoom:50%;" />
 
 现在我们只管 LoginModel 类和 UserManger 之间的依赖关系。
 
@@ -60,7 +60,7 @@ LoginPresenter presenter = new LoginPresenter(userManager);
 
 但当对象之间的依赖关系很复杂的时候，使用手动依赖注入，事情会变得异常复杂。比如：
 
-<img src="/Users/austen/Desktop/interview/Android平台相关/Dagger2/Screenshot/2.png" style="zoom:33%;" />
+<img src="https://note-austen-1256667106.cos.ap-beijing.myqcloud.com/2020-05-11-153249.png" style="zoom:50%;" />
 
 这个一个 MVP 的场景，我现在就是想在 LoginActivity 中使用 LoginPresenter 对象。
 

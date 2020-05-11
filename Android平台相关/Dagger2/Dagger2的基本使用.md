@@ -4,19 +4,19 @@
 
 现在我需要产品，我是**消费者**，不能直接去工厂里面拿产品需要一个**中间人**即商家去和**厂家**协商，我才能最后拿到我想要的产品。
 
-<img src="/Users/austen/Desktop/interview/Android平台相关/Dagger2/Screenshot/3.png" style="zoom:33%;" />
+![](https://note-austen-1256667106.cos.ap-beijing.myqcloud.com/2020-05-11-152959.png)
 
 在 Dagger2 中，也有上面类似的模型，它是通过注解来表明上面的供应关系的。
 
 1. 对于消费者来说，我要什么产品，要告诉商家。在类中表现为：类现在需要一个依赖对象，类要把这个消息告诉 Dagger。我们只需要在所需要的对象上面用 **@Inject** 注解这个对象即可。
 
-![](/Users/austen/Desktop/interview/Android平台相关/Dagger2/Screenshot/4.png)
+![](https://note-austen-1256667106.cos.ap-beijing.myqcloud.com/2020-05-11-153018.png)
 
 图：表明我们的 MainActivity 类中需要依赖 Product 对象。
 
 2. 消费者需要什么产品，消费者自己已经表明，但是目前商家还不知道，并且在我们的类中连商家这个角色也没有。那么在 Dagger2 中，充当中间商家的是用 **@Component** 注解的一个接口。
 
-![](/Users/austen/Desktop/interview/Android平台相关/Dagger2/Screenshot/5.png)
+![](https://note-austen-1256667106.cos.ap-beijing.myqcloud.com/2020-05-11-153028.png)
 
 声明完商家还不行，商家必须知道是那个消费者，商家要为那个消费者服务。
 
@@ -44,7 +44,7 @@
 
 这时 FactoryModule 提供的对象已经通过 Businessman 交给 MainActivity。我们就可以在 MainActivity 中使用 Product 对象了。
 
-![](/Users/austen/Desktop/interview/Android平台相关/Dagger2/Screenshot/10.gif)
+![](https://note-austen-1256667106.cos.ap-beijing.myqcloud.com/2020-05-11-153056.gif)
 
 在 Make Project 的时候你会神奇的发现，IDE 中 product 这个变量从没有被引用变为引用了。这时就表明你的注入代码没问题。
 
