@@ -50,4 +50,39 @@
 
 ###### 3.2 声明构造
 
-从上面第一次编译的错写信息来看，还有一种方式来完成。用 **@Inject** 注解 Proudect 类的构造方法。
+从上面第一次编译的错写信息来看，还有一种方式来完成。用 **@Inject** 注解 Proudect 类的构造方法。首先将 **Businessman** 中 `Component` 与 `Module` 的关系断开（断开的目的就是看看只用给 Product 声明构造的方式是否注入成功）。
+
+![image-20200512072359652](https://note-austen-1256667106.cos.ap-beijing.myqcloud.com/2020-05-11-232402.png)
+
+我们将这个商家与厂家的关系断开。然后给 `Product` 类的构造函数上添加 `@Inject` 注解。
+
+> <img src="https://note-austen-1256667106.cos.ap-beijing.myqcloud.com/2020-05-11-233251.png" alt="image-20200512073143253" style="zoom:50%;" />、
+
+然后在 `Make Project` 一下。声明构造方法也可以。
+
+#### 注入到类中的依赖对象使用
+
+到这里还没玩，还需要显示的调用注入的方法。为什么还要显示的调用 `void inject()` 方法呢，这个问题我想在说一下：首先 Dagger2 是通过编译器生成代码来进行依赖注入的，它并不是在运行时初始化对象的，所有的工作都是在编译期完成。
+
+> <img src="https://note-austen-1256667106.cos.ap-beijing.myqcloud.com/2020-05-11-234459.png" alt="image-20200512074434911" style="zoom:30%;" /> 
+
+现在你可以点击 `MainActivity` 类中 `Produce` 成员变量，IDE 提示 ` instance.product = product` 这个变量被外部类的一个 `instance` 对象引用了，然后被赋值 `product` 。点进去看一下，你会发现有个方法：
+
+> <img src="/Users/austen/Library/Application Support/typora-user-images/image-20200512074944588.png" alt="image-20200512074944588" style="zoom:33%;" /> 
+
+先不用管 Dagger2 是怎么在编译期生成这样的一个方法。首先它是一个方法，这个方法被调用后 `Mactivity ` 中 `product` 这个对象才会正真的被赋值，那么这个方法是谁调用的呢？
+
+答：没有人调用！！！ 所以需要去主动调用这个方法，`product` 成员变量才会被赋值。你只要理解 Dagger2 的工作范围是在编译期，它只是在编译器，根据我们定义的 `@Inject` 、`@Component` 、`@Module` 相关代码生成依赖注入的代码，正真的初始化对象肯定是在运行期，运行期不属于 Dagger2 的工作范围，那么就需要我们来介入。
+
+> ![image-20200512080526221](https://note-austen-1256667106.cos.ap-beijing.myqcloud.com/2020-05-12-000529.png)
+
+很明显 `Product` 对象已经被注入到 `MainActivity` 当前。
+
+```java
+DaggerBusinessman.builder()
+                .factoryModule(new FactoryModule())
+                .build()
+                .inject(this);
+```
+
+上面代码就是主动调用注入的方法，这里会最终调用到刚才最终赋值 `instance.product = product` 的这个语句，`product` 对象才被初始化完成。
