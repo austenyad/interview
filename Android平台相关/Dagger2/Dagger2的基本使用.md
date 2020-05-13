@@ -1,18 +1,36 @@
 ## Dagger2的基本使用
 
-这一篇就开始了解 Dagger2 的使用了，做好准备。
+这一篇就开始了解 Dagger2 的使用了，Dagger2 中会使用比较多的内部注解在编译时生成依赖注入的代码，它的**工作区间就是在程序的编译构建期**，要让编译期生成的依赖注入代码起作用，就需要程序在运行期调用，生成的依赖注入代码，这个调用是需要我们手动完成的。你先要知道关于 Dagger2 整体的工作原理，时刻去揣摩他内部的工作原理，这个我觉得很重要。
 
-现在我需要产品，我是**消费者**，不能直接去工厂里面拿产品需要一个**中间人**即商家去和**厂家**协商，我才能最后拿到我想要的产品。
+#### Dagger2 中最重要的三个注解
 
-![](https://note-austen-1256667106.cos.ap-beijing.myqcloud.com/2020-05-11-152959.png)
+**@Inject**
 
-在 Dagger2 中，也有上面类似的模型，它是通过注解来表明上面的供应关系的。
+**@Component**
 
-1. 对于消费者来说，我要什么产品，要告诉商家。在类中表现为：类现在需要一个依赖对象，类要把这个消息告诉 Dagger。我们只需要在所需要的对象上面用 **@Inject** 注解这个对象即可。
+**@Module**
 
-![](https://note-austen-1256667106.cos.ap-beijing.myqcloud.com/2020-05-11-153018.png)
+下面我们通过一个示例模型来说明，好让你能好理解一些。
 
-图：表明我们的 MainActivity 类中需要依赖 Product 对象。
+现在我需要产品，我是**消费者**，我要去买一瓶神仙快乐水，不能直接去工厂里面拿产品需要一个**中间人**即商家去和**厂家**协商，我才能最后拿到我想要的产品。上面三个注解，在下图中对于的关系是：
+
+![image-20200513074544568](https://note-austen-1256667106.cos.ap-beijing.myqcloud.com/2020-05-12-234546.png)
+
+1.  `@Inject` 声明我需要什么，也就是我要依赖谁。（我要可乐，然后用可乐解渴）
+2. `@Compoent` 中的间商家，它会去与厂家协商，并且它知道消费者需要什么。（需要可乐啊！！！）
+3. `@module` 提供可乐的厂家。
+
+很简单吧，下面我们具体看一下，怎么通过代码将对象注入到类中的。还是三个步骤：
+
+1. 什么我需要什么：
+
+> <img src="https://note-austen-1256667106.cos.ap-beijing.myqcloud.com/2020-05-12-235820.png" alt="image-20200513075818346" style="zoom:50%;" align="left"/>
+
+2.  什么完我需要可乐，但是这时候还没有商家，需要商家告诉商家我要可乐。
+
+> <img src="/Users/austen/Library/Application Support/typora-user-images/image-20200513080205531.png" alt="image-20200513080205531" style="zoom:50%;" align="left" />
+
+解释：被 `@Compoent` 什么的商家**必须是接口**，在这个接口中什么了消费者谁（我），也声明了提供可乐的厂家是谁。***消费者：***`void inject(MainActivity activity)` 接口中这个方法就声明消费者是 `MainActivity` ,***厂家*：** `@Compoent(modules = FactoryModule.class)` 在这个 `@Component` 注解中 `moudles` 的参数 `FactoryModule` 就是生成可乐从厂家。（果然你看 `@Component` 是中间者，起来消费者和厂家联系的媒介）
 
 2. 消费者需要什么产品，消费者自己已经表明，但是目前商家还不知道，并且在我们的类中连商家这个角色也没有。那么在 Dagger2 中，充当中间商家的是用 **@Component** 注解的一个接口。
 
@@ -86,3 +104,6 @@ DaggerBusinessman.builder()
 ```
 
 上面代码就是主动调用注入的方法，这里会最终调用到刚才最终赋值 `instance.product = product` 的这个语句，`product` 对象才被初始化完成。
+
+
+
