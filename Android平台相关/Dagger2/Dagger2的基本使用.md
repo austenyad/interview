@@ -30,80 +30,67 @@
 
 > <img src="/Users/austen/Library/Application Support/typora-user-images/image-20200513080205531.png" alt="image-20200513080205531" style="zoom:50%;" align="left" />
 
-解释：被 `@Compoent` 什么的商家**必须是接口**，在这个接口中什么了消费者谁（我），也声明了提供可乐的厂家是谁。***消费者：***`void inject(MainActivity activity)` 接口中这个方法就声明消费者是 `MainActivity` ,***厂家*：** `@Compoent(modules = FactoryModule.class)` 在这个 `@Component` 注解中 `moudles` 的参数 `FactoryModule` 就是生成可乐从厂家。（果然你看 `@Component` 是中间者，起来消费者和厂家联系的媒介）
+解释：被 `@Compoent` 什么的商家**必须是接口**，在这个接口中什么了消费者谁（我），也声明了提供可乐的厂家是谁。***消费者：***`void inject(MainActivity activity)` 接口中这个方法就声明消费者是 `MainActivity` ,***厂家*：** `@Compoent(modules = FactoryModule.class)` 在这个 `@Component` 注解中 `moudles` 的参数 `FactoryModule` 就是生产可乐从厂家。（果然你看 `@Component` 是中间者，起来消费者和厂家联系的媒介）
 
-2. 消费者需要什么产品，消费者自己已经表明，但是目前商家还不知道，并且在我们的类中连商家这个角色也没有。那么在 Dagger2 中，充当中间商家的是用 **@Component** 注解的一个接口。
+3. 这时就是剩正真生产可乐的厂家，第二步中 `@Compoent(moudles = FactoryMoudle.class)` 注解参数中声明的就是这个类。
 
-![](https://note-austen-1256667106.cos.ap-beijing.myqcloud.com/2020-05-11-153028.png)
+   > ![image-20200514070023788](https://note-austen-1256667106.cos.ap-beijing.myqcloud.com/2020-05-13-230025.png)
 
-声明完商家还不行，商家必须知道是那个消费者，商家要为那个消费者服务。
+用 `@Module` 注解表明生产对象的类，在这个类中所有提供对象的方法都要被 `@Provides` 注解。
 
-![](/Users/austen/Desktop/interview/Android平台相关/Dagger2/Screenshot/6.png)
+上面就是关于给 `Mactivity` 通过 Dagger2 注入 `Cola` 对象的代码，现在需要编译一下项目，Dagger2 就会生成依赖注入的代码。
 
-这样商家就会知道是谁需要产品，并且为他服务。商家就会去消费者 MainActivity 里面去找被 **@Inject** 注解的类。这里给商家声明谁是消费者，是固定写法：`void inject(消费者)；` 先不用知道为什么这样写。
+> 编译前
+>
+> <img src="https://note-austen-1256667106.cos.ap-beijing.myqcloud.com/2020-05-13-231122.png" alt="image-20200514071050647" style="zoom:50%;" align="left" />
+>
+> 编译后
+>
+> <img src="https://note-austen-1256667106.cos.ap-beijing.myqcloud.com/2020-05-13-231321.png" alt="image-20200514071315547" style="zoom:50%;" align="left" />
+>
+> 对比一看，IDE 出现上面的标记，就说明 `Business` 接口是有实现类的。多于到底生成了什么，我们今天先不关心，后面一点一点都剖析到。
 
-3. 目前想想是不是就剩工厂角色还没有，没有工厂角色为商家提供产品。你现在可以试着 Make Project 一下项目；
+文章开头说，Dagger2 的工作范围是编译期，它只是生成了依赖注入相关的代码，对于程序运行时注入的调用，还需要我们手动调用。具体来看一下：
 
-![](/Users/austen/Desktop/interview/Android平台相关/Dagger2/Screenshot/7.png)
+> <img src="https://note-austen-1256667106.cos.ap-beijing.myqcloud.com/2020-05-13-232013.png" alt="image-20200514072001205" style="zoom:50%;" />
 
-报错了，错误信息描述：在没有用 **@Inject** 注解其构造方法 或者 没有一个 **@Provides** 注解的方法的情况下，Product 对象不能被提供。
+从图中看，要注入的对象 `cola` 被 `MainActivity_MembersInjector` 类中的一个语句引用，并且赋值。`instance.cola = cola` ,这个表达式的左边 `instance` 肯定是 `MainActivity` 的实例，右边一定是 Dagger2  生成的 `Cola` 类的实例，通过这个表达式，`MainActivity` 中的 `cola` 就被赋值了。我们点进入看一下：
 
-其实上面已经告诉我们怎样去提供 Product 对象，有两种方式。我们分别都说一下。
+> <img src="https://note-austen-1256667106.cos.ap-beijing.myqcloud.com/2020-05-13-232701.png" alt="image-20200514072653305" style="zoom:50%;" />
 
-###### 3.1 声明工厂角色：
+只看 `injectCola(MainActivity instance,Cola cola) ` 这个方法，很明显当这个方法被调用时，`MainActivity` 中的 `cola` 才会被正真的实例化完成。那么是谁调用这个方法呢？我们继续看。
 
-工厂角色在 Dagger2 中也是一个类，只不过是用 **@Module** 注解的类。然后像上面错误信息所提示的那样声明一个被 **@Provides** 注解的方法，并提供对象，因为工厂是正真生产对象的。
+> <img src="https://note-austen-1256667106.cos.ap-beijing.myqcloud.com/2020-05-13-233352.png" alt="image-20200514073343813" style="zoom:50%;" />
 
-![](/Users/austen/Desktop/interview/Android平台相关/Dagger2/Screenshot/8.png)
+> <img src="https://note-austen-1256667106.cos.ap-beijing.myqcloud.com/2020-05-13-233450.png" alt="image-20200514073445099" style="zoom:50%;" />
 
-还有要告诉商家，那个工厂提供对象。要在 Businessman **Component** 中声明，并且编译项目：
+（记住我们这里只看方法的调用关系，别陷入太深）这不是 `Businessman` 接口的实现类吗！！！看 Dagger2    在背后为了依赖注入生成的代码。我们在代码中所有被 `@Component` 注解的接口，生成的实现类的名字都是在原有的接口名之前加上 **Dagger**，例如：`DaggerBusinessman` 。
 
-![](/Users/austen/Desktop/interview/Android平台相关/Dagger2/Screenshot/9.png)
+从图中看调用关系：
 
-这时 FactoryModule 提供的对象已经通过 Businessman 交给 MainActivity。我们就可以在 MainActivity 中使用 Product 对象了。
+`DaggerBusinessman#inject(MainActivity activity)` ->
 
-![](https://note-austen-1256667106.cos.ap-beijing.myqcloud.com/2020-05-11-153056.gif)
+`DaggerBusinessman#injectMainActivity(MainActivity instance)`->
 
-在 Make Project 的时候你会神奇的发现，IDE 中 product 这个变量从没有被引用变为引用了。这时就表明你的注入代码没问题。
+`MainActivity_MembersInjector#injectCola(MainActivity instance, Cola cola)`
 
-###### 3.2 声明构造
+那么当调用 `DaggerBusinessman#inject(MainActivity activity)`  这个方法时，`MainActivity_MembersInjector#injectCola(MainActivity instance, Cola cola)` 里面的 `instance.cola = coloa` 就会被调用赋值。
 
-从上面第一次编译的错写信息来看，还有一种方式来完成。用 **@Inject** 注解 Proudect 类的构造方法。首先将 **Businessman** 中 `Component` 与 `Module` 的关系断开（断开的目的就是看看只用给 Product 声明构造的方式是否注入成功）。
+再仔细想一想，`DaggerBusinessman#inject(MainActivity activity)` 方法不就是
 
-![image-20200512072359652](https://note-austen-1256667106.cos.ap-beijing.myqcloud.com/2020-05-11-232402.png)
+> <img src="https://note-austen-1256667106.cos.ap-beijing.myqcloud.com/2020-05-13-235213.png" alt="image-20200514075212369" style="zoom:50%;" />
 
-我们将这个商家与厂家的关系断开。然后给 `Product` 类的构造函数上添加 `@Inject` 注解。
+`Businessman` 接口方法中 `void inject(MainActivity activity) ` 的抽象方法实现吗！！！
 
-> <img src="https://note-austen-1256667106.cos.ap-beijing.myqcloud.com/2020-05-11-233251.png" alt="image-20200512073143253" style="zoom:50%;" />、
+我们手动调用程序在运行时，实例化 `cola` 对象的代码就是，调用 `DaggerBussinessman#inject(MainActivity activity)` 方法。
 
-然后在 `Make Project` 一下。声明构造方法也可以。
+<img src="https://note-austen-1256667106.cos.ap-beijing.myqcloud.com/2020-05-14-000104.png" alt="image-20200514080057203" style="zoom:50%;" />
 
-#### 注入到类中的依赖对象使用
+我们在 `Mactivity` 中掉用了 `DaggerBusinessman` 实例的 `inject` 方法，对于当前版本生成的代码可以用 3 种方式调用。我们调用其中最简单的一种，然后调用依赖类的方法。
 
-到这里还没玩，还需要显示的调用注入的方法。为什么还要显示的调用 `void inject()` 方法呢，这个问题我想在说一下：首先 Dagger2 是通过编译器生成代码来进行依赖注入的，它并不是在运行时初始化对象的，所有的工作都是在编译期完成。
+<img src="/Users/austen/Library/Application Support/typora-user-images/image-20200514080530210.png" alt="image-20200514080530210" style="zoom:50%;" />
 
-> <img src="https://note-austen-1256667106.cos.ap-beijing.myqcloud.com/2020-05-11-234459.png" alt="image-20200512074434911" style="zoom:30%;" /> 
+依赖类的方法被调用了，显然依赖对象已经被真正的实例化了。
 
-现在你可以点击 `MainActivity` 类中 `Produce` 成员变量，IDE 提示 ` instance.product = product` 这个变量被外部类的一个 `instance` 对象引用了，然后被赋值 `product` 。点进去看一下，你会发现有个方法：
-
-> <img src="/Users/austen/Library/Application Support/typora-user-images/image-20200512074944588.png" alt="image-20200512074944588" style="zoom:33%;" /> 
-
-先不用管 Dagger2 是怎么在编译期生成这样的一个方法。首先它是一个方法，这个方法被调用后 `Mactivity ` 中 `product` 这个对象才会正真的被赋值，那么这个方法是谁调用的呢？
-
-答：没有人调用！！！ 所以需要去主动调用这个方法，`product` 成员变量才会被赋值。你只要理解 Dagger2 的工作范围是在编译期，它只是在编译器，根据我们定义的 `@Inject` 、`@Component` 、`@Module` 相关代码生成依赖注入的代码，正真的初始化对象肯定是在运行期，运行期不属于 Dagger2 的工作范围，那么就需要我们来介入。
-
-> ![image-20200512080526221](https://note-austen-1256667106.cos.ap-beijing.myqcloud.com/2020-05-12-000529.png)
-
-很明显 `Product` 对象已经被注入到 `MainActivity` 当前。
-
-```java
-DaggerBusinessman.builder()
-                .factoryModule(new FactoryModule())
-                .build()
-                .inject(this);
-```
-
-上面代码就是主动调用注入的方法，这里会最终调用到刚才最终赋值 `instance.product = product` 的这个语句，`product` 对象才被初始化完成。
-
-
+> 上面的流程就是 Dagger2 实例化对象的流程，可能刚接触有点不熟悉，慢慢来，我在一开始也是很懵逼的。
 
