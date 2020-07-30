@@ -4,3 +4,38 @@
 
 
 
+### ThreadLocal 不支持继承性
+
+```java
+  // 1. 创建线程变量
+   static ThreadLocal<String> threadLocal = new ThreadLocal<>();
+
+    public static void main(String[] args) {
+        //2 设置线程变量
+        threadLocal.set("Hello World");
+        //3 启动子线程
+        Thread thread = new Thread(new Runnable() {
+            @Override
+            public void run() {
+                //4 子线输出线程的变量值
+                System.out.println("thread:"+ threadLocal.get());
+            }
+        });
+        thread.start();
+
+        //5. 主线程输出线程变量的值
+        System.out.println("main:"+ threadLocal.get());
+    }
+
+```
+
+输入结果：
+
+main:Hello World
+
+thread:null
+
+也就是说，同一个 ThreadLocal 变量在父线程中被设置后，在子线程中是获取不到的。根据上面 ThreadLocal 的源码介绍，这属于正常现象。
+
+那么有没有办法让子线程能访问到父线程中的值呢？
+
