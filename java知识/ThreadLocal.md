@@ -39,3 +39,15 @@ thread:null
 
 那么有没有办法让子线程能访问到父线程中的值呢？
 
+### InheritableThreadLocal
+
+
+
+
+
+
+
+### 总结：
+
+ThreadLocal 他看起来更像是一个工具类，通过调用它实例的 set 或者 get 方法，从执行这句代码的 Thread 的 threadlocals 成员中设置和获取值，theadloads 的数据结构是个 map ，map 的 key 就语句 `threadloacl.set(value)/get()`，中 threadlocal 实例本身，在代码中用 this 指向当前实例。
+
