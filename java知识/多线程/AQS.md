@@ -226,5 +226,112 @@ static final class Node {
 
 **获取锁失败后续流程分析**
 
-锁的意义就是使用竞争到的锁对象线程执行同步代码，多个线程竞争锁时，竞争失败的线程需要被阻塞等待后唤醒。那么 `ReentrantLock` 是如何实现线程等待并唤醒的呢？
+锁的意义就是使用竞争到的锁对象线程执行同步代码，多个线程竞争锁时，竞争失败的线程需要被阻塞等待 后续唤醒。那么 `ReentrantLock` 是如何实现线程等待并唤醒的呢？
+
+前面，我们提到 `ReentrantLock.lock()` 阶段，在 `acquire()` 方法中会先后调用 `tryAcquire()`、`addWaiter()`、`acquireQueued()` 这 3 个方法来处理。`tryAcquire()` 在 `ReentrantLock` 中被复写并实现，如果返回 true 说明成功获取锁，就继续执行同步代码语句。可是如果 `tryAquire` 返回 false，也就是说当前锁对象被其他线程所持有，那么当前线程会被 AQS 如何处理？
+
+**addWaiter** 
+
+首先当前获取锁失败的线程会被添加到一个等待队列的末端，具体源码如下：
+
+```java
+/**
+ * Creates and enqueues node for current thread and given mode.
+ *
+ * @param mode Node.EXCLUSIVE for exclusive, Node.SHARED for shared
+ * @return the new node
+ * 将线程以 Node 方式添加到队列中
+ */
+private Node addWaiter(Node mode) {
+    Node node = new Node(Thread.currentThread(), mode); // 把线程封装到一个新的 Node
+    // Try the fast path of enq; backup to full enq on failure
+    Node pred = tail;
+    if (pred != null) { // 将 node 插入队列
+        node.prev = pred;
+        if (compareAndSetTail(pred, node)) { // CAS 替换当前的尾部。成功则返回
+            pred.next = node;
+            return node;
+        }
+    }
+    enq(node); // 插入队列失败，进入 enq 自旋重试插入队列
+    return node;
+}
+```
+
+```java
+/**
+ * Inserts node into queue, initializing if necessary. See picture above.
+ * @param node the node to insert
+ * @return node's predecessor
+ */
+private Node enq(final Node node) {
+    for (;;) {  // 自旋    重试 插入队列
+        Node t = tail;
+        if (t == null) { // Must initialize 如果队列从未初始化，需要初始化一个空的 Node
+            if (compareAndSetHead(new Node()))
+                tail = head;
+        } else {  
+            node.prev = t;
+            if (compareAndSetTail(t, node)) {
+                t.next = node;
+                return t;
+            }
+        }
+    }
+}
+```
+
+有两种情况会导致插入失败：
+
+1. tail 为空：说明队列从未初始化，因此需要调用 enq 方法在队列中插入一个 **空的 Node**。
+2. compareAndSetTail 失败：说明插入过程中有线程修改了队列，因此需要调用 enq 将当前 node 重新插入到 队列末端。（**自旋** 重试 插入队列）
+
+经过 `addWaiter`  方法之后，此时线程以 Node 的方式加入到队列的末端，但是线程还没有被执行阻塞操作，真正的阻塞操作是在下面的 `acquireQueued()` 方法中判断执行。
+
+**acquireQueued**
+
+在 `acquireQueued()` 方法中并不会立即挂起该节点中的线程，因此在插入节点的过程中，之前持有锁的线程可能已经执行完毕并释放锁，所以这里使用自旋再次去获取锁（不放过任何优化细节）。如果自旋操作还没有获取到锁！那么就将该线程挂起（阻塞），该方法的源码如下：
+
+```java
+/**
+ * Acquires in exclusive uninterruptible mode for thread already in
+ * queue. Used by condition wait methods as well as acquire.
+ *
+ * @param node the node
+ * @param arg the acquire argument
+ * @return {@code true} if interrupted while waiting
+ */
+final boolean acquireQueued(final Node node, int arg) {
+    boolean failed = true;
+    try {
+        boolean interrupted = false;
+        for (;;) {
+            
+            final Node p = node.predecessor();
+             /**
+             *  检测 当前节点的前驱节点是否是 head,这是获取锁的资格。
+             *  如果是的话，则调用 tryAcquire 尝试获取锁
+             *  成功，则将 head 置为当前节点
+             */
+            if (p == head && tryAcquire(arg)) {
+                setHead(node);
+                p.next = null; // help GC
+                failed = false;
+                return interrupted;
+            }
+            /**
+             * 如果未成功获取锁 则根据前驱节点判断是否要阻塞。
+             * 如果阻塞过程中被中断，则置 interruputed 标志为 true。
+             * shouldParkAfterFailedAcquire 方法在前驱状态不为 SIGNAL 的情况下都会循环重试获取锁。
+             */
+            if (shouldParkAfterFailedAcquire(p, node) &&
+                parkAndCheckInterrupt())
+                interrupted = true;
+        }
+    } finally {
+        if (failed)
+            cancelAcquire(node);
+    }
+}
+```
 
