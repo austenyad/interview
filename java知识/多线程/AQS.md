@@ -335,3 +335,10 @@ final boolean acquireQueued(final Node node, int arg) {
 }
 ```
 
+![](https://note-austen-1256667106.cos.ap-beijing.myqcloud.com/20200813150253.png)
+
+上面是 ReentrantLock 在多线程环境下获取锁的步骤，从 lock 方法开始：
+
+1. A 线程调用 AQS 的 `compareAndSetState` 修改 **state** 。
+   * 成功：说明当前线程成功获取到锁，并调用 `setExclusiveOwnerThread` ，标记当前线程要独占锁。
+   * 失败：因为 `comareAndSetState` 是 CAS 操作说明，在修改 state 值的过程中已经有其他线程成功修改了 state，即锁已经被其他线程占用。相反，调用 `acquire` 对没有获取到锁的线程进行其他处理。
