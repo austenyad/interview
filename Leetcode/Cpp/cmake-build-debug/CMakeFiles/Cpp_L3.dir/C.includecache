@@ -1,0 +1,14 @@
+#IncludeRegexLine: ^[ 	]*[#%][ 	]*(include|import)[ 	]*[<"]([^">]+)([">])
+
+#IncludeRegexScan: ^.*$
+
+#IncludeRegexComplain: ^$
+
+#IncludeRegexTransform: 
+
+/Users/austen/Study/LeetCodeLearning/Array/austenYang/Leetcode/Cpp/L3/solution.c
+stdio.h
+-
+string.h
+-
+

@@ -1,0 +1,141 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project version="4">
+  <component name="CMakeRunConfigurationManager" shouldGenerate="true" shouldDeleteObsolete="true">
+    <generated>
+      <config projectName="Cpp" targetName="Cpp" />
+      <config projectName="Cpp" targetName="Cpp_L3" />
+      <config projectName="Cpp" targetName="Cpp_L451" />
+      <config projectName="Cpp" targetName="Cpp_L101" />
+      <config projectName="Cpp" targetName="Cpp_L1" />
+    </generated>
+  </component>
+  <component name="CMakeSettings" AUTO_RELOAD="true">
+    <configurations>
+      <configuration PROFILE_NAME="Debug" CONFIG_NAME="Debug" />
+    </configurations>
+  </component>
+  <component name="ChangeListManager">
+    <list default="true" id="fb22e93b-7092-4c32-af59-dd0aaa29435a" name="Default Changelist" comment="" />
+    <option name="SHOW_DIALOG" value="false" />
+    <option name="HIGHLIGHT_CONFLICTS" value="true" />
+    <option name="HIGHLIGHT_NON_ACTIVE_CHANGELIST" value="false" />
+    <option name="LAST_RESOLUTION" value="IGNORE" />
+  </component>
+  <component name="ClangdSettings">
+    <option name="formatViaClangd" value="false" />
+  </component>
+  <component name="ExecutionTargetManager" SELECTED_TARGET="CMakeBuildProfile:Debug" />
+  <component name="Git.Settings">
+    <option name="RECENT_GIT_ROOT_PATH" value="$PROJECT_DIR$/../../../.." />
+  </component>
+  <component name="ProjectId" id="1f34CMnkqBlTrnT93GP3lPoAKcZ" />
+  <component name="ProjectLevelVcsManager" settingsEditedManually="true" />
+  <component name="ProjectViewState">
+    <option name="hideEmptyMiddlePackages" value="true" />
+    <option name="showLibraryContents" value="true" />
+  </component>
+  <component name="PropertiesComponent">
+    <property name="RunOnceActivity.OpenProjectViewOnStart" value="true" />
+    <property name="RunOnceActivity.ShowReadmeOnStart" value="true" />
+    <property name="WebServerToolWindowFactoryState" value="true" />
+    <property name="cf.first.check.clang-format" value="false" />
+    <property name="last_opened_file_path" value="$PROJECT_DIR$" />
+    <property name="nodejs_interpreter_path.stuck_in_default_project" value="undefined stuck path" />
+    <property name="nodejs_npm_path_reset_for_default_project" value="true" />
+    <property name="settings.editor.selected.configurable" value="preferences.pluginManager" />
+  </component>
+  <component name="RunManager" selected="CMake Application.Cpp_L3">
+    <configuration name="Cpp" type="CMakeRunConfiguration" factoryName="Application" REDIRECT_INPUT="false" PASS_PARENT_ENVS_2="true" PROJECT_NAME="Cpp" TARGET_NAME="Cpp" CONFIG_NAME="Debug" RUN_TARGET_PROJECT_NAME="Cpp" RUN_TARGET_NAME="Cpp">
+      <method v="2">
+        <option name="com.jetbrains.cidr.execution.CidrBuildBeforeRunTaskProvider$BuildBeforeRunTask" enabled="true" />
+      </method>
+    </configuration>
+    <configuration name="Cpp_L1" type="CMakeRunConfiguration" factoryName="Application" REDIRECT_INPUT="false" PASS_PARENT_ENVS_2="true" PROJECT_NAME="Cpp" TARGET_NAME="Cpp_L1" CONFIG_NAME="Debug" RUN_TARGET_PROJECT_NAME="Cpp" RUN_TARGET_NAME="Cpp_L1">
+      <method v="2">
+        <option name="com.jetbrains.cidr.execution.CidrBuildBeforeRunTaskProvider$BuildBeforeRunTask" enabled="true" />
+      </method>
+    </configuration>
+    <configuration name="Cpp_L101" type="CMakeRunConfiguration" factoryName="Application" REDIRECT_INPUT="false" PASS_PARENT_ENVS_2="true" PROJECT_NAME="Cpp" TARGET_NAME="Cpp_L101" CONFIG_NAME="Debug" RUN_TARGET_PROJECT_NAME="Cpp" RUN_TARGET_NAME="Cpp_L101">
+      <method v="2">
+        <option name="com.jetbrains.cidr.execution.CidrBuildBeforeRunTaskProvider$BuildBeforeRunTask" enabled="true" />
+      </method>
+    </configuration>
+    <configuration name="Cpp_L3" type="CMakeRunConfiguration" factoryName="Application" REDIRECT_INPUT="false" PASS_PARENT_ENVS_2="true" PROJECT_NAME="Cpp" TARGET_NAME="Cpp_L3" CONFIG_NAME="Debug" RUN_TARGET_PROJECT_NAME="Cpp" RUN_TARGET_NAME="Cpp_L3">
+      <method v="2">
+        <option name="com.jetbrains.cidr.execution.CidrBuildBeforeRunTaskProvider$BuildBeforeRunTask" enabled="true" />
+      </method>
+    </configuration>
+    <configuration name="Cpp_L451" type="CMakeRunConfiguration" factoryName="Application" REDIRECT_INPUT="false" PASS_PARENT_ENVS_2="true" PROJECT_NAME="Cpp" TARGET_NAME="Cpp_L451" CONFIG_NAME="Debug" RUN_TARGET_PROJECT_NAME="Cpp" RUN_TARGET_NAME="Cpp_L451">
+      <method v="2">
+        <option name="com.jetbrains.cidr.execution.CidrBuildBeforeRunTaskProvider$BuildBeforeRunTask" enabled="true" />
+      </method>
+    </configuration>
+    <list>
+      <item itemvalue="CMake Application.Cpp" />
+      <item itemvalue="CMake Application.Cpp_L1" />
+      <item itemvalue="CMake Application.Cpp_L101" />
+      <item itemvalue="CMake Application.Cpp_L3" />
+      <item itemvalue="CMake Application.Cpp_L451" />
+    </list>
+  </component>
+  <component name="SvnConfiguration">
+    <configuration />
+  </component>
+  <component name="TaskManager">
+    <task active="true" id="Default" summary="Default task">
+      <changelist id="fb22e93b-7092-4c32-af59-dd0aaa29435a" name="Default Changelist" comment="" />
+      <created>1595433313315</created>
+      <option name="number" value="Default" />
+      <option name="presentableId" value="Default" />
+      <updated>1595433313315</updated>
+      <workItem from="1595433314512" duration="6005000" />
+      <workItem from="1595667163407" duration="3822000" />
+    </task>
+    <servers />
+  </component>
+  <component name="TypeScriptGeneratedFilesManager">
+    <option name="version" value="2" />
+  </component>
+  <component name="WindowStateProjectService">
+    <state x="443" y="88" key="#New_File_Extensions" timestamp="1595667452212">
+      <screen x="0" y="23" width="1440" height="800" />
+    </state>
+    <state x="443" y="88" key="#New_File_Extensions/0.23.1440.800@0.23.1440.800" timestamp="1595667452212" />
+    <state x="581" y="177" key="#com.intellij.refactoring.safeDelete.UnsafeUsagesDialog" timestamp="1595522140321">
+      <screen x="0" y="23" width="1440" height="800" />
+    </state>
+    <state x="581" y="177" key="#com.intellij.refactoring.safeDelete.UnsafeUsagesDialog/0.23.1440.800@0.23.1440.800" timestamp="1595522140321" />
+    <state width="1071" height="230" key="GridCell.Tab.0.bottom" timestamp="1595781132208">
+      <screen x="0" y="23" width="1440" height="800" />
+    </state>
+    <state width="1071" height="230" key="GridCell.Tab.0.bottom/0.23.1440.800@0.23.1440.800" timestamp="1595781132208" />
+    <state width="1071" height="230" key="GridCell.Tab.0.center" timestamp="1595781132208">
+      <screen x="0" y="23" width="1440" height="800" />
+    </state>
+    <state width="1071" height="230" key="GridCell.Tab.0.center/0.23.1440.800@0.23.1440.800" timestamp="1595781132208" />
+    <state width="1071" height="230" key="GridCell.Tab.0.left" timestamp="1595781132207">
+      <screen x="0" y="23" width="1440" height="800" />
+    </state>
+    <state width="1071" height="230" key="GridCell.Tab.0.left/0.23.1440.800@0.23.1440.800" timestamp="1595781132207" />
+    <state width="1071" height="230" key="GridCell.Tab.0.right" timestamp="1595781132208">
+      <screen x="0" y="23" width="1440" height="800" />
+    </state>
+    <state width="1071" height="230" key="GridCell.Tab.0.right/0.23.1440.800@0.23.1440.800" timestamp="1595781132208" />
+    <state width="1071" height="2" key="GridCell.Tab.1.bottom" timestamp="1595597601427">
+      <screen x="0" y="23" width="1440" height="800" />
+    </state>
+    <state width="1071" height="2" key="GridCell.Tab.1.bottom/0.23.1440.800@0.23.1440.800" timestamp="1595597601427" />
+    <state width="1071" height="2" key="GridCell.Tab.1.center" timestamp="1595597601427">
+      <screen x="0" y="23" width="1440" height="800" />
+    </state>
+    <state width="1071" height="2" key="GridCell.Tab.1.center/0.23.1440.800@0.23.1440.800" timestamp="1595597601427" />
+    <state width="1071" height="2" key="GridCell.Tab.1.left" timestamp="1595597601427">
+      <screen x="0" y="23" width="1440" height="800" />
+    </state>
+    <state width="1071" height="2" key="GridCell.Tab.1.left/0.23.1440.800@0.23.1440.800" timestamp="1595597601427" />
+    <state width="1071" height="2" key="GridCell.Tab.1.right" timestamp="1595597601427">
+      <screen x="0" y="23" width="1440" height="800" />
+    </state>
+    <state width="1071" height="2" key="GridCell.Tab.1.right/0.23.1440.800@0.23.1440.800" timestamp="1595597601427" />
+  </component>
+</project>

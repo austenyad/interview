@@ -1,0 +1,357 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project version="4">
+  <component name="AutoImportSettings">
+    <option name="autoReloadType" value="SELECTIVE" />
+  </component>
+  <component name="ChangeListManager">
+    <list default="true" id="41595ee2-abc2-4930-95bc-235c43422c99" name="Default Changelist" comment="构建TreeNOde">
+      <change afterPath="$PROJECT_DIR$/src/L26/Solution.java" afterDir="false" />
+    </list>
+    <option name="SHOW_DIALOG" value="false" />
+    <option name="HIGHLIGHT_CONFLICTS" value="true" />
+    <option name="HIGHLIGHT_NON_ACTIVE_CHANGELIST" value="false" />
+    <option name="LAST_RESOLUTION" value="IGNORE" />
+  </component>
+  <component name="FileTemplateManagerImpl">
+    <option name="RECENT_TEMPLATES">
+      <list>
+        <option value="FxmlFile" />
+        <option value="Kotlin File" />
+        <option value="Class" />
+      </list>
+    </option>
+  </component>
+  <component name="Git.Settings">
+    <option name="RECENT_GIT_ROOT_PATH" value="$PROJECT_DIR$/../.." />
+  </component>
+  <component name="ProjectId" id="1drdSTyrdDzBBgfRUCN3GXj7ebE" />
+  <component name="ProjectLevelVcsManager" settingsEditedManually="true">
+    <ConfirmationsSetting value="2" id="Add" />
+  </component>
+  <component name="ProjectViewState">
+    <option name="hideEmptyMiddlePackages" value="true" />
+    <option name="showLibraryContents" value="true" />
+  </component>
+  <component name="PropertiesComponent">
+    <property name="last_opened_file_path" value="$PROJECT_DIR$" />
+    <property name="settings.editor.selected.configurable" value="project.propVCSSupport.Mappings" />
+  </component>
+  <component name="PsiViewer.ProjectComponent">
+    <option name="HIGHLIGHT" value="false" />
+    <option name="FILTER_WHITESPACE" value="false" />
+    <option name="SHOW_PROPERTIES" value="true" />
+    <option name="SPLIT_DIVIDER_POSITION" value="300" />
+    <option name="AUTOSCROLL_TO_SOURCE" value="false" />
+    <option name="AUTOSCROLL_FROM_SOURCE" value="false" />
+  </component>
+  <component name="RecentsManager">
+    <key name="CopyClassDialog.RECENTS_KEY">
+      <recent name="L1367" />
+      <recent name="L101" />
+      <recent name="Algorithms4.chapter_1" />
+      <recent name="L173" />
+      <recent name="L102" />
+    </key>
+    <key name="CopyFile.RECENT_KEYS">
+      <recent name="$PROJECT_DIR$/src/MyInterview" />
+      <recent name="$PROJECT_DIR$/src" />
+    </key>
+  </component>
+  <component name="RunManager" selected="Application.Solution">
+    <configuration name="InsertSort" type="Application" factoryName="Application" temporary="true" nameIsGenerated="true">
+      <option name="MAIN_CLASS_NAME" value="algorithms4.chapter_2.Sort.InsertSort" />
+      <module name="JavaKotlin" />
+      <extension name="coverage">
+        <pattern>
+          <option name="PATTERN" value="algorithms4.chapter_2.Sort.*" />
+          <option name="ENABLED" value="true" />
+        </pattern>
+      </extension>
+      <method v="2">
+        <option name="Make" enabled="true" />
+      </method>
+    </configuration>
+    <configuration name="MergeSort" type="Application" factoryName="Application" temporary="true" nameIsGenerated="true">
+      <option name="MAIN_CLASS_NAME" value="algorithms4.chapter_2.Sort.MergeSort" />
+      <module name="JavaKotlin" />
+      <extension name="coverage">
+        <pattern>
+          <option name="PATTERN" value="algorithms4.chapter_2.Sort.*" />
+          <option name="ENABLED" value="true" />
+        </pattern>
+      </extension>
+      <method v="2">
+        <option name="Make" enabled="true" />
+      </method>
+    </configuration>
+    <configuration name="SelectSort" type="Application" factoryName="Application" temporary="true" nameIsGenerated="true">
+      <option name="MAIN_CLASS_NAME" value="algorithms4.chapter_2.Sort.SelectSort" />
+      <module name="JavaKotlin" />
+      <extension name="coverage">
+        <pattern>
+          <option name="PATTERN" value="algorithms4.chapter_2.Sort.*" />
+          <option name="ENABLED" value="true" />
+        </pattern>
+      </extension>
+      <method v="2">
+        <option name="Make" enabled="true" />
+      </method>
+    </configuration>
+    <configuration name="Solution" type="Application" factoryName="Application" temporary="true" nameIsGenerated="true">
+      <option name="MAIN_CLASS_NAME" value="L103.Solution" />
+      <module name="JavaKotlin" />
+      <extension name="coverage">
+        <pattern>
+          <option name="PATTERN" value="L103.*" />
+          <option name="ENABLED" value="true" />
+        </pattern>
+      </extension>
+      <method v="2">
+        <option name="Make" enabled="true" />
+      </method>
+    </configuration>
+    <configuration name="SortKt" type="JetRunConfigurationType" temporary="true" nameIsGenerated="true">
+      <module name="JavaKotlin" />
+      <option name="VM_PARAMETERS" />
+      <option name="PROGRAM_PARAMETERS" />
+      <option name="ALTERNATIVE_JRE_PATH_ENABLED" value="false" />
+      <option name="ALTERNATIVE_JRE_PATH" />
+      <option name="PASS_PARENT_ENVS" value="true" />
+      <option name="MAIN_CLASS_NAME" value="algorithms4.chapter_2.Sort.SortKt" />
+      <option name="WORKING_DIRECTORY" />
+      <method v="2">
+        <option name="Make" enabled="true" />
+      </method>
+    </configuration>
+    <recent_temporary>
+      <list>
+        <item itemvalue="Application.Solution" />
+        <item itemvalue="Application.SelectSort" />
+        <item itemvalue="Kotlin.SortKt" />
+        <item itemvalue="Application.MergeSort" />
+        <item itemvalue="Application.InsertSort" />
+      </list>
+    </recent_temporary>
+  </component>
+  <component name="SpellCheckerSettings" RuntimeDictionaries="0" Folders="0" CustomDictionaries="0" DefaultDictionary="application-level" UseSingleDictionary="true" transferred="true" />
+  <component name="SvnConfiguration">
+    <configuration />
+  </component>
+  <component name="TaskManager">
+    <task active="true" id="Default" summary="Default task">
+      <changelist id="41595ee2-abc2-4930-95bc-235c43422c99" name="Default Changelist" comment="" />
+      <created>1593187145500</created>
+      <option name="number" value="Default" />
+      <option name="presentableId" value="Default" />
+      <updated>1593187145500</updated>
+    </task>
+    <task id="LOCAL-00001" summary="构建TreeNOde">
+      <created>1594595749600</created>
+      <option name="number" value="00001" />
+      <option name="presentableId" value="LOCAL-00001" />
+      <option name="project" value="LOCAL" />
+      <updated>1594595749600</updated>
+    </task>
+    <option name="localTasksCounter" value="2" />
+    <servers />
+  </component>
+  <component name="Vcs.Log.Tabs.Properties">
+    <option name="TAB_STATES">
+      <map>
+        <entry key="MAIN">
+          <value>
+            <State />
+          </value>
+        </entry>
+      </map>
+    </option>
+    <option name="oldMeFiltersMigrated" value="true" />
+  </component>
+  <component name="VcsManagerConfiguration">
+    <MESSAGE value="构建TreeNOde" />
+    <option name="LAST_COMMIT_MESSAGE" value="构建TreeNOde" />
+  </component>
+  <component name="WindowStateProjectService">
+    <state x="354" y="108" key="#Inspections" timestamp="1596884351176">
+      <screen x="0" y="23" width="1440" height="800" />
+    </state>
+    <state x="354" y="108" key="#Inspections/0.23.1440.800@0.23.1440.800" timestamp="1596884351176" />
+    <state x="320" y="71" key="#Plugins" timestamp="1596820550559">
+      <screen x="0" y="23" width="1440" height="800" />
+    </state>
+    <state x="320" y="71" key="#Plugins/0.23.1440.800@0.23.1440.800" timestamp="1596820550559" />
+    <state x="533" y="147" key="#com.intellij.ide.util.MemberChooser" timestamp="1596867416951">
+      <screen x="0" y="23" width="1440" height="800" />
+    </state>
+    <state x="533" y="140" key="#com.intellij.ide.util.MemberChooser/0.0.1440.900@0.0.1440.900" timestamp="1594573487229" />
+    <state x="533" y="147" key="#com.intellij.ide.util.MemberChooser/0.23.1440.800@0.23.1440.800" timestamp="1596867416951" />
+    <state x="533" y="148" key="#com.intellij.ide.util.MemberChooser/0.23.1440.804@0.23.1440.804" timestamp="1593945978246" />
+    <state x="408" y="195" key="#com.intellij.openapi.updateSettings.impl.PluginUpdateInfoDialog" timestamp="1596820396204">
+      <screen x="0" y="23" width="1440" height="800" />
+    </state>
+    <state x="408" y="193" key="#com.intellij.openapi.updateSettings.impl.PluginUpdateInfoDialog/0.0.1440.900@0.0.1440.900" timestamp="1594551258053" />
+    <state x="408" y="195" key="#com.intellij.openapi.updateSettings.impl.PluginUpdateInfoDialog/0.23.1440.800@0.23.1440.800" timestamp="1596820396204" />
+    <state x="483" y="160" key="#xdebugger.evaluate" timestamp="1594555098875">
+      <screen x="0" y="0" width="1440" height="900" />
+    </state>
+    <state x="483" y="160" key="#xdebugger.evaluate/0.0.1440.900@0.0.1440.900" timestamp="1594555098875" />
+    <state x="263" y="23" key="CommitChangelistDialog2" timestamp="1595892818265">
+      <screen x="0" y="23" width="1440" height="800" />
+    </state>
+    <state x="263" y="25" key="CommitChangelistDialog2/0.0.1440.900@0.0.1440.900" timestamp="1594595749293" />
+    <state x="263" y="23" key="CommitChangelistDialog2/0.23.1440.800@0.23.1440.800" timestamp="1595892818265" />
+    <state width="480" height="464" key="DebuggerActiveHint" timestamp="1597074253981">
+      <screen x="0" y="23" width="1440" height="800" />
+    </state>
+    <state width="480" height="464" key="DebuggerActiveHint/0.23.1440.800@0.23.1440.800" timestamp="1597074253981" />
+    <state width="429" height="466" key="DebuggerActiveHint/0.23.1440.804@0.23.1440.804" timestamp="1593869403469" />
+    <state width="1398" height="284" key="GridCell.Tab.0.bottom" timestamp="1597101644764">
+      <screen x="0" y="23" width="1440" height="800" />
+    </state>
+    <state width="1398" height="27" key="GridCell.Tab.0.bottom/0.0.1440.900@0.0.1440.900" timestamp="1594681840546" />
+    <state width="1398" height="284" key="GridCell.Tab.0.bottom/0.23.1440.800@0.23.1440.800" timestamp="1597101644764" />
+    <state width="1398" height="2" key="GridCell.Tab.0.bottom/0.23.1440.804@0.23.1440.804" timestamp="1593934493472" />
+    <state width="1398" height="284" key="GridCell.Tab.0.center" timestamp="1597101644764">
+      <screen x="0" y="23" width="1440" height="800" />
+    </state>
+    <state width="1398" height="27" key="GridCell.Tab.0.center/0.0.1440.900@0.0.1440.900" timestamp="1594681840545" />
+    <state width="1398" height="284" key="GridCell.Tab.0.center/0.23.1440.800@0.23.1440.800" timestamp="1597101644764" />
+    <state width="1398" height="2" key="GridCell.Tab.0.center/0.23.1440.804@0.23.1440.804" timestamp="1593934493471" />
+    <state width="1398" height="284" key="GridCell.Tab.0.left" timestamp="1597101644763">
+      <screen x="0" y="23" width="1440" height="800" />
+    </state>
+    <state width="1398" height="27" key="GridCell.Tab.0.left/0.0.1440.900@0.0.1440.900" timestamp="1594681840544" />
+    <state width="1398" height="284" key="GridCell.Tab.0.left/0.23.1440.800@0.23.1440.800" timestamp="1597101644763" />
+    <state width="1398" height="2" key="GridCell.Tab.0.left/0.23.1440.804@0.23.1440.804" timestamp="1593934493471" />
+    <state width="1398" height="284" key="GridCell.Tab.0.right" timestamp="1597101644764">
+      <screen x="0" y="23" width="1440" height="800" />
+    </state>
+    <state width="1398" height="27" key="GridCell.Tab.0.right/0.0.1440.900@0.0.1440.900" timestamp="1594681840546" />
+    <state width="1398" height="284" key="GridCell.Tab.0.right/0.23.1440.800@0.23.1440.800" timestamp="1597101644764" />
+    <state width="1398" height="2" key="GridCell.Tab.0.right/0.23.1440.804@0.23.1440.804" timestamp="1593934493472" />
+    <state width="1398" height="284" key="GridCell.Tab.1.bottom" timestamp="1597101644765">
+      <screen x="0" y="23" width="1440" height="800" />
+    </state>
+    <state width="1398" height="172" key="GridCell.Tab.1.bottom/0.0.1440.900@0.0.1440.900" timestamp="1594681840540" />
+    <state width="1398" height="284" key="GridCell.Tab.1.bottom/0.23.1440.800@0.23.1440.800" timestamp="1597101644765" />
+    <state width="1398" height="2" key="GridCell.Tab.1.bottom/0.23.1440.804@0.23.1440.804" timestamp="1593934493539" />
+    <state width="1398" height="284" key="GridCell.Tab.1.center" timestamp="1597101644765">
+      <screen x="0" y="23" width="1440" height="800" />
+    </state>
+    <state width="1398" height="172" key="GridCell.Tab.1.center/0.0.1440.900@0.0.1440.900" timestamp="1594681840539" />
+    <state width="1398" height="284" key="GridCell.Tab.1.center/0.23.1440.800@0.23.1440.800" timestamp="1597101644765" />
+    <state width="1398" height="2" key="GridCell.Tab.1.center/0.23.1440.804@0.23.1440.804" timestamp="1593934493537" />
+    <state width="1398" height="284" key="GridCell.Tab.1.left" timestamp="1597101644764">
+      <screen x="0" y="23" width="1440" height="800" />
+    </state>
+    <state width="1398" height="172" key="GridCell.Tab.1.left/0.0.1440.900@0.0.1440.900" timestamp="1594681840539" />
+    <state width="1398" height="284" key="GridCell.Tab.1.left/0.23.1440.800@0.23.1440.800" timestamp="1597101644764" />
+    <state width="1398" height="2" key="GridCell.Tab.1.left/0.23.1440.804@0.23.1440.804" timestamp="1593934493536" />
+    <state width="1398" height="284" key="GridCell.Tab.1.right" timestamp="1597101644765">
+      <screen x="0" y="23" width="1440" height="800" />
+    </state>
+    <state width="1398" height="172" key="GridCell.Tab.1.right/0.0.1440.900@0.0.1440.900" timestamp="1594681840539" />
+    <state width="1398" height="284" key="GridCell.Tab.1.right/0.23.1440.800@0.23.1440.800" timestamp="1597101644765" />
+    <state width="1398" height="2" key="GridCell.Tab.1.right/0.23.1440.804@0.23.1440.804" timestamp="1593934493538" />
+    <state x="221" y="64" key="SettingsEditor" timestamp="1599988838385">
+      <screen x="0" y="23" width="1440" height="800" />
+    </state>
+    <state x="221" y="64" key="SettingsEditor/0.23.1440.800@0.23.1440.800" timestamp="1599988838385" />
+    <state x="221" y="64" key="SettingsEditor/0.23.1440.804@0.23.1440.804" timestamp="1593942112555" />
+    <state x="450" y="163" width="549" height="522" key="StructurePopup" timestamp="1597621591853">
+      <screen x="0" y="23" width="1440" height="800" />
+    </state>
+    <state x="450" y="158" width="549" height="587" key="StructurePopup/0.0.1440.900@0.0.1440.900" timestamp="1594661131196" />
+    <state x="450" y="163" width="549" height="522" key="StructurePopup/0.23.1440.800@0.23.1440.800" timestamp="1597621591853" />
+    <state x="450" y="158" width="549" height="587" key="StructurePopup/0.23.1440.804@0.23.1440.804" timestamp="1594052131563" />
+    <state x="320" y="190" key="Vcs.Push.Dialog.v2" timestamp="1594595803349">
+      <screen x="0" y="0" width="1440" height="900" />
+    </state>
+    <state x="320" y="190" key="Vcs.Push.Dialog.v2/0.0.1440.900@0.0.1440.900" timestamp="1594595803349" />
+    <state x="215" y="166" width="1009" height="617" key="com.intellij.xdebugger.impl.breakpoints.ui.BreakpointsDialogFactory$2" timestamp="1596980644604">
+      <screen x="0" y="23" width="1440" height="800" />
+    </state>
+    <state x="215" y="166" width="1009" height="617" key="com.intellij.xdebugger.impl.breakpoints.ui.BreakpointsDialogFactory$2/0.23.1440.800@0.23.1440.800" timestamp="1596980644604" />
+    <state width="500" height="193" key="documentation.popup.size" timestamp="1593865720777">
+      <screen x="0" y="23" width="1440" height="804" />
+    </state>
+    <state width="500" height="193" key="documentation.popup.size/0.23.1440.804@0.23.1440.804" timestamp="1593865720777" />
+    <state x="137" y="45" key="new project wizard" timestamp="1595248309236">
+      <screen x="0" y="23" width="1440" height="800" />
+    </state>
+    <state x="137" y="45" key="new project wizard/0.23.1440.800@0.23.1440.800" timestamp="1595248309236" />
+    <state x="385" y="197" width="670" height="601" key="search.everywhere.popup" timestamp="1600012466467">
+      <screen x="0" y="23" width="1440" height="800" />
+    </state>
+    <state x="385" y="196" width="670" height="676" key="search.everywhere.popup/0.0.1440.900@0.0.1440.900" timestamp="1594661886144" />
+    <state x="385" y="197" width="670" height="601" key="search.everywhere.popup/0.23.1440.800@0.23.1440.800" timestamp="1600012466467" />
+  </component>
+  <component name="XDebuggerManager">
+    <breakpoint-manager>
+      <breakpoints>
+        <line-breakpoint enabled="true" type="java-line">
+          <url>file://$PROJECT_DIR$/src/LInterview02_02/Solution.java</url>
+          <line>18</line>
+          <option name="timeStamp" value="4" />
+        </line-breakpoint>
+        <line-breakpoint enabled="true" type="java-line">
+          <url>file://$PROJECT_DIR$/src/SwordOffer59/MaxQueue.java</url>
+          <line>45</line>
+          <option name="timeStamp" value="8" />
+        </line-breakpoint>
+        <line-breakpoint enabled="true" type="java-line">
+          <url>file://$PROJECT_DIR$/src/L109/Solution.java</url>
+          <line>40</line>
+          <option name="timeStamp" value="13" />
+        </line-breakpoint>
+        <line-breakpoint enabled="true" type="java-line">
+          <url>file://$PROJECT_DIR$/src/L405/Solution.java</url>
+          <line>5</line>
+          <option name="timeStamp" value="18" />
+        </line-breakpoint>
+        <line-breakpoint enabled="true" type="java-line">
+          <url>file://$PROJECT_DIR$/src/L283/Solution.java</url>
+          <line>12</line>
+          <option name="timeStamp" value="19" />
+        </line-breakpoint>
+        <line-breakpoint enabled="true" type="java-line">
+          <url>file://$PROJECT_DIR$/src/L4/Solution.java</url>
+          <line>37</line>
+          <option name="timeStamp" value="27" />
+        </line-breakpoint>
+        <line-breakpoint enabled="true" type="java-line">
+          <url>file://$PROJECT_DIR$/src/L6/Solution.java</url>
+          <line>13</line>
+          <option name="timeStamp" value="28" />
+        </line-breakpoint>
+        <line-breakpoint enabled="true" type="java-line">
+          <url>file://$PROJECT_DIR$/src/L7/Solution.java</url>
+          <line>11</line>
+          <option name="timeStamp" value="29" />
+        </line-breakpoint>
+        <line-breakpoint enabled="true" type="java-line">
+          <url>file://$PROJECT_DIR$/src/algorithms4/chapter_2/Sort/MergeSort.java</url>
+          <line>45</line>
+          <option name="timeStamp" value="33" />
+        </line-breakpoint>
+        <line-breakpoint enabled="true" type="java-line">
+          <url>file://$PROJECT_DIR$/src/L103/Solution.java</url>
+          <line>21</line>
+          <option name="timeStamp" value="36" />
+        </line-breakpoint>
+        <line-breakpoint enabled="true" type="kotlin-line">
+          <url>file://$PROJECT_DIR$/src/LInterview02_02/KSolution.kt</url>
+          <line>6</line>
+          <option name="timeStamp" value="6" />
+        </line-breakpoint>
+        <breakpoint enabled="true" type="java-exception">
+          <properties class="java.lang.ArrayIndexOutOfBoundsException" package="java.lang" />
+          <option name="timeStamp" value="31" />
+        </breakpoint>
+      </breakpoints>
+    </breakpoint-manager>
+  </component>
+  <component name="se.expertsystem.intellij.aop.aspectj.AspectJProjectComponent">
+    <setting name="isActivated" value="false" />
+  </component>
+</project>
