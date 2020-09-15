@@ -4,9 +4,7 @@
     <option name="autoReloadType" value="SELECTIVE" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="41595ee2-abc2-4930-95bc-235c43422c99" name="Default Changelist" comment="构建TreeNOde">
-      <change afterPath="$PROJECT_DIR$/src/L26/Solution.java" afterDir="false" />
-    </list>
+    <list default="true" id="41595ee2-abc2-4930-95bc-235c43422c99" name="Default Changelist" comment="构建TreeNOde" />
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
     <option name="HIGHLIGHT_NON_ACTIVE_CHANGELIST" value="false" />
