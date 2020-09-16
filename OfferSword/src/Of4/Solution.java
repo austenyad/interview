@@ -1,5 +1,7 @@
 package Of4;
 
+import java.util.concurrent.ConcurrentHashMap;
+
 public class Solution {
     public boolean findNumberIn2DArray(int[][] matrix, int target) {
         // 二维数组为 null 或者 二维数组的长度为 0
@@ -27,5 +29,8 @@ public class Solution {
             }
         }
         new Solution().findNumberIn2DArray(matrix, 2);
+
+        ConcurrentHashMap<String, String> concurrentHashMap = new ConcurrentHashMap<>();
+        concurrentHashMap.put("10","111");
     }
 }
