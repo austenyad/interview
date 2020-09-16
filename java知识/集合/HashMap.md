@@ -70,3 +70,4 @@ private final Node<K,V>[] initTable() {
 }
 ```
 
+**sizeCtl** 默认值是 0，如果 ConcurrentHashMap 实例化时有传参数，**sizeCtl** 会是一个 2 的幂次方的值。所以执行第一次 put 操作的线程会执行 Unsafe.compare
