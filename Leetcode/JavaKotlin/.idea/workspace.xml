@@ -4,7 +4,10 @@
     <option name="autoReloadType" value="SELECTIVE" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="41595ee2-abc2-4930-95bc-235c43422c99" name="Default Changelist" comment="构建TreeNOde" />
+    <list default="true" id="41595ee2-abc2-4930-95bc-235c43422c99" name="Default Changelist" comment="构建TreeNOde">
+      <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../../ar/Untitled.md" beforeDir="false" />
+    </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
     <option name="HIGHLIGHT_NON_ACTIVE_CHANGELIST" value="false" />
@@ -256,11 +259,11 @@
     </state>
     <state x="221" y="64" key="SettingsEditor/0.23.1440.800@0.23.1440.800" timestamp="1599988838385" />
     <state x="221" y="64" key="SettingsEditor/0.23.1440.804@0.23.1440.804" timestamp="1593942112555" />
-    <state x="450" y="163" width="549" height="522" key="StructurePopup" timestamp="1597621591853">
+    <state x="450" y="163" width="549" height="522" key="StructurePopup" timestamp="1600271932672">
       <screen x="0" y="23" width="1440" height="800" />
     </state>
     <state x="450" y="158" width="549" height="587" key="StructurePopup/0.0.1440.900@0.0.1440.900" timestamp="1594661131196" />
-    <state x="450" y="163" width="549" height="522" key="StructurePopup/0.23.1440.800@0.23.1440.800" timestamp="1597621591853" />
+    <state x="450" y="163" width="549" height="522" key="StructurePopup/0.23.1440.800@0.23.1440.800" timestamp="1600271932672" />
     <state x="450" y="158" width="549" height="587" key="StructurePopup/0.23.1440.804@0.23.1440.804" timestamp="1594052131563" />
     <state x="320" y="190" key="Vcs.Push.Dialog.v2" timestamp="1594595803349">
       <screen x="0" y="0" width="1440" height="900" />
@@ -278,11 +281,11 @@
       <screen x="0" y="23" width="1440" height="800" />
     </state>
     <state x="137" y="45" key="new project wizard/0.23.1440.800@0.23.1440.800" timestamp="1595248309236" />
-    <state x="385" y="197" width="670" height="601" key="search.everywhere.popup" timestamp="1600012466467">
+    <state x="385" y="197" width="670" height="601" key="search.everywhere.popup" timestamp="1600266592649">
       <screen x="0" y="23" width="1440" height="800" />
     </state>
     <state x="385" y="196" width="670" height="676" key="search.everywhere.popup/0.0.1440.900@0.0.1440.900" timestamp="1594661886144" />
-    <state x="385" y="197" width="670" height="601" key="search.everywhere.popup/0.23.1440.800@0.23.1440.800" timestamp="1600012466467" />
+    <state x="385" y="197" width="670" height="601" key="search.everywhere.popup/0.23.1440.800@0.23.1440.800" timestamp="1600266592649" />
   </component>
   <component name="XDebuggerManager">
     <breakpoint-manager>
