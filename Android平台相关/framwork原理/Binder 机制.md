@@ -1,4 +1,4 @@
-# IPC
+# Binder 机制
 
 ### 一、Android Framework 里面用到了那些 IPC 方式？
 
@@ -694,4 +694,12 @@ mNativePtr 是就是 Parcel 在 native 层对应的 Parcel 对象的指针，这
 
 1. 首先根据指针拿到 native 层的 Parcel 对象。
 2. 然后 ibinderForJavaObject(env,obj)，我们传递进来的是 java 层的 binder 对象，这个方法要根据 obj 找到 native 层对应的 binder 对象，然后 把 native 层的 binder 对象 通过 native 层的 writeStrongBinder 方法，写到 native 层的 Parcel 对象里面 
+
+
+
+
+
+
+
+
 
