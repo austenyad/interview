@@ -699,7 +699,132 @@ mNativePtr 是就是 Parcel 在 native 层对应的 Parcel 对象的指针，这
 
 
 
+进程间通信涉及三大要素：
+
+1. 源：谁来发送数据
+2. 目的：发给谁 --> **用 handle 表示 表示服务**，你向这个服务发送消息的时候就是，向提供这个服务的进程发送数据 handle 是个整数， 这个整数是对这个服务的引用（就比如说是我们进程 open 某个文件然后，返回一个整数，我们称为描述符，它也就某个文件的引用，一样的道理）。在不同的进程里面这个 handle 的值可能不一样。
+
+<img src="https://note-austen-1256667106.cos.ap-beijing.myqcloud.com/2020-10-14-151235.png" alt="image-20201014231233694" style="zoom: 50%;" />
+
+总结： handle 是一个服务的引用，是进程 Server 对进程 Client 进程提供的服务 s 的引用。 Server 进程可能提供多个服务，提供服务的每个 handle 值都是不一样的。 提供的驱动程序（也就是在内核中）根据 handle 找到目的进程（Server 进程）。**在这个驱动内部肯定会有一个结构体描述这个引用，这个引用就是 binder_ref。**它里有个成员是个整数，当我们调用驱动程序的时候，驱动程序会对比内核里面一系列的 binder_ref，如果找的 某个 binder_ref 里面的 desc 这个整数等于 handle ，就表明找到这**服务 的 引用**。 **binder_ref 是对某个 服务 的 引用**，那么这个服务本身是怎么表示的？这个服务是一个 **binder_node**，驱动程序既然根据 handle 找服务的引用，那么从这个 binder_ref 肯定有一项，可以让你找到这个服务。这一项就是 binder_ref：node。我这个 Clinet 程序是想向这个进程 B 发送数据，我只用这个 handle 来表示这个进程 B ，那么我就能通过，这个 handle 找到 biner_ref ，通过 binder_ref 找到 biner_node ，通过 binder_node 找到 这个进程 B，谁来表示这个进程 B呢？在 biner 驱动里面用 **binder_proc** 来表示进程 B。
+
+Client 想向 Server 进程发送数据，它调用 ioctl ，传入一个 handle ,我根据这个 handle ,可以找到一个 binder_ref，binder_ref 里的 desc 就是这个 handle ，然后又在 bindle_ref 里面有一个指针 node 执行 binder_node，然后我们就找这个binder_node，binder_node 是表示某一个服务。binder_node 里面有一项叫 binder_proc ，我根据这个指针找到 binder_proc ,binder_proc 表示就对应进程 Server，那么我就可以把数据放到进程 B 的某个链表里面去了。
+
+真实的应用场景是，会有多个 Client 来向 Server进程请求服务，那么这个 Server 进程就会创建多个线程 ，来向这些 Client 程序提供服务，所以这个 Server 里面肯定有一个结构体来管理这些线程，这个结构体就是 rb_root threads，它是一个红黑树，在这个红黑树上挂有多个线程，这些线程会用 binder_thread 结构体表示。没有线程都会有一个 binder_thread 结构体。
+
+
+
+<img src="https://note-austen-1256667106.cos.ap-beijing.myqcloud.com/2020-10-14-171100.png" alt="image-20201015011052508" style="zoom: 100%;" />
+
+
+
+3.  数据本身
+
+
+
+Native 层 发起远程调用
+
+```c++
+/**
+ * binder_call() 发起远程调用
+ * target:向谁发送数据
+ * code：调用哪个函数
+ * msg：提供什么参数
+ * reply：返回值
+ * */
+int binder_call(struct binder_state *bs,
+                struct binder_io *msg, struct binder_io *reply,
+                uint32_t target, uint32_t code)
+```
+
+
+
+binder 结点的总结
+
+在这个引用过程中源头是谁？
+
+源头是这 Server 的 binder_node，所以我们来更加细化的总结一下：
+
+1. 你肯定先要创建这个 binder_node ，别人才能引用你，那么就是 Server 进程 创建（是在内核态里面，所有的 binder_ref 、binder_node 都是内核驱动程序里面创建的） binder_node(为每个服务创建 binder_node)，**binder_node.proc = Server 进程**。
+
+2. 我们的 SerivceManager 会在内核态里面创建 binder_ref，引用 binder_node。binder_ref 里面有一项整数:binder_ref.desc = 1 ,2,3,4 ..... 从一开始放。
+
+   在 ServiceManager 进程的用户态会创建一个链表，链表的 node 里面有
+
+   ```
+   node{
+   	服务的名字,
+   	handle
+   }
+   ```
+
+   这个 handle 就等于 binder_ref.desc 。与之对应。
+
+3. 我们的 Client 程序 向 ServiceManager 查询服务，怎么查询服务呢？就是向 ServiceManager 传递一个 服务的名字，
+
+4. ServiceManager 返回 这 服务名对应的 handle ，是返回给 内核态（返回到驱动程序）
+
+5. 驱动程序在 ServiceManager 的 binder_ref 链表（其实是红黑树）中，根据 handle 找到 binder_ref。
+
+   再根据 binder_ref.node 找到 binder_node，
+
+   最后，给 Client 进程创建新的 binder_ref，它指向上面的 binder_node , 它的 binder_ref.desc 从 1 开始
+
+   .......。
+
+对于 ServiceManager 它有一系列的 biner_ref ，对于 Client 程序它也有一系列的 biner_ref ，对于 ServiceManager 里面的 binder_ref ，它的那个整数值 对应于那个服务是由注册服务的顺序 决定的。对于Client 它的 binder_ref 里面的 desc 整数值，对应那一个服务是由 它获得服务的顺序决定的。
+
+<img src="https://note-austen-1256667106.cos.ap-beijing.myqcloud.com/2020-10-14-151235.png" alt="image-20201014231233694" style="zoom: 50%;" />
+
+所以说上面表中，我先向 ServiceManger 注册 hello （左边） 服务 对应的 handle 是 1，再注册 Goody 服务对于的 handle 就是 2 ，那么对于 Client 我首先获取 Goody 服务 （右边） 那么 handle 1 就对应的是  Goody 服务，我紧接着获取 hello 服务， 那么 handle 为 2 的时候 就对应 hello 服务。**所以说这个 handle 它是进程相关的，它是属于某个进程的。**
+
+驱动程序返回  desc 给 client ,它即为 handle 。
+
+6. clinet => handle，我这个 client 程序要发数据给这个 handle 的时候，会导致什么操作呢？驱动里面会根据 handle 找到 biner_ref（每个进程里面它都有一系列的 binder_ref） ，根据 binder_ref，找到 binder_node，根据 binder_node 找到 Server 进程。
 
 
 
 
+
+#### 数据怎么传的呢？（进程怎么结合）
+
+Clinet  -------> Server  我这个 Client程序把数据   发个Server ，实际上是**先写后读**，我把数据写给你，然后处理完成程序在读数据。
+
+1. Client 端构造数据，调用 ioctl 发数据。
+2. 在驱动程序里面我根据 handle ,最终可以知道 Server 进程。
+3. 把数据放入进程的某个链表，进程用 binder_pro 表示，在 binder_proc 里面有一项 binder_proc.todo ，我们把数据方法这个 todo 链表里面去，
+4. client 程序把数据写到 todo 链表后，没有数据可写就开始休眠。
+5. client 端的 binder_proc.todo 链表 Ser端写回数据的时候 ，也被唤醒
+6. 从 todo 链表里面取出数据返回用户空间。
+
+
+
+Server 程序  在它的循环里面肯定是先读后写，读出 client 程序发给我的数据，我根据这些数据的指示进程操作，在把操作后的结果写回 Clinet 。
+
+1. 发起读操作，没有数据的时候休眠 （当 client 程序把数据放到 Server进程的 binder_proc.todo 链表的时候唤醒读操作）
+2. 被唤醒
+3. 从 todo 链表取出数据 返回用户空间，
+4. 处理数据
+5. 把处理数据的结构写回 Client .也是方入 Clinet 的binder_proc.todo 链表，唤醒 Client 程序
+
+![image-20201015005037800](https://note-austen-1256667106.cos.ap-beijing.myqcloud.com/2020-10-14-165039.png)
+
+#### 数据如何复制
+
+我们用到 mmap 用户态可以直接操作内核态的内存，如果不使用 mmap 的话，应该怎么传输数据
+
+
+
+![image-20201015005233713](https://note-austen-1256667106.cos.ap-beijing.myqcloud.com/2020-10-14-165235.png)
+
+一般方法需要两次复制。
+
+
+
+binder 的方式：只需要一次拷贝
+
+![image-20201015005908222](https://note-austen-1256667106.cos.ap-beijing.myqcloud.com/2020-10-14-165910.png)
+
+这些操作会涉及一个结构体 binder_buffer，
+
+我们说的数据只复制一次
