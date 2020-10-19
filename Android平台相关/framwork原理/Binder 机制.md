@@ -1,4 +1,89 @@
-# Binder 机制
+# Binder 
+
+### 什么是 Biner ？
+
+Binder 是用来通信的，在系统的进程间实现通信的，也就是 IPC (Inner-Process Communication)。
+
+Binder 可以分为两端，一个是 Client 端，一个是 Server 端。Client 和 Server 端可以在同一个进程也可以不在同一个进程，更确切的说 Binder 机制是 RPC （远程过程调用）。Client 端可以向 Server 端发起远程调用，并且可以把数据当中函数调用的参数进程传递。
+
+对于 Binder 的理解，其实可以思考一下，如果让自己去实现一套跨进程通信机制，你应该怎么做？
+
+<img src="https://note-austen-1256667106.cos.ap-beijing.myqcloud.com/2020-10-06-184615.png" alt="image-20201007024614110" style="zoom:25%;" />
+
+我们大概可以怎么做：Client 端要调用 Server 端的一个 call 函数。
+
+1. 首先它要把参数序列化到一个 buffer。
+2. 然后再通过 Linux 的各自跨进程方式，来讲 buffer 传递到 Server 端。
+3. 在 Server 端再把 buffer 反序列化，还原出各个参数，然后再去调用这个对应的函数。
+4. 最后再将这个函数的结果原路返回给 Client 端。
+
+在这个过程中我们要考虑几个问题：
+
+**性能问题**：跨进程传递 buffer 的时候，速度要快，尽量减少数据拷贝。
+
+**方便**：Linux 只提供最底层的数据传输方式，就相当于只有一个物理层，但是正真的跨进程调用就涉及到的事就太多了，就好比我只给你一根电话线，你就能打电话吗？当然不行！！！
+
+当你有了电话线，你只有消息的传输通道，我不用知道你在隔壁还是在千里之外，但是我说的话是声音，你得先把声音转成点电信号，才能通过电话线发出去，当然你还要知道发给谁，那么多的人！当你知道发给谁了，你还要知道怎么把它转发给他，那么多人你可能还需要一个转发中心。而且对于接受方来说，突然来的一股电流，你就能知道是谁发了消息，并且发了什么消息吗？当然不行，你得先要把电信号转成声音，所以我们看到光要一根电话线是远远不够的，上层还要好多好多工作要做。我们要在 Linux 提供的底层跨进程机制上搭建一整套方便的框架才行，不然的话在应用层开发的我们就太痛苦了。
+
+**安全：**就像打电话，不能说只要有电话就接电话，我得看来电号码才行，或者说最好要有一个骚扰拦截机制 等等。
+
+总之一个完善的跨进程调用机制是非常复杂的，性能要好，用起来要方便，而且还要非常安全等等。
+
+那么 Binder 机制就是这么一款好用的工具。
+
+Binder 是在驱动层工作，内核态完成的相关工作，并不是使用 Linux 提供的跨进程机制，像管道、Socket、共享内存。binder 是自己发明了一套新的机制。
+
+### Binder 存在的意义
+
+**性能**
+
+Linux 提供的跨进程通信进制，管道、Socket 这些机制，它们在跨进程通信的时候是需要内核做中转的，那么这个就需要两次的数据拷贝，就是所谓的 系统调用 copy_from_user 和 copy_to_user。但是 Binder 是有些区别的，它是把一块物理内存同时映射到内核和目标进程的用户空间，这样当你把数据拷贝的内核空间的时候，就相当于也拷贝到了目标进程的用户空间，所以只用拷贝一次数据。
+
+**方便易用**
+
+binder 的使用逻辑简单直接不会出什么问题，共享内存虽然性能很好，但远远没有 binder 使用起来方便。
+
+**安全**
+
+普通的 Linux 跨进程通信方式其实是非常不安全的，比如说像 Socket 它的 IP 地址都是开发的，别人知道它的 IP 地址就能来连接它了。或者说是 命名管道也是你管道的名称了就能往里面写东西了，这个是很容易被人利用的，这里主要的问题是 我们拿不到调用方可靠的身份信息，这个身份信息你总不能说让调用方自己去填写吧！这个明显是不可靠的。可靠的方式应该只能由 IPC 机制本身在内核态中添加，这一点 Binder 是做到了。
+
+### Binder 的通信架构
+
+<img src="https://note-austen-1256667106.cos.ap-beijing.myqcloud.com/2020-10-06-104122.png" alt="image-20201006184121476" style="zoom:33%;" />
+
+1. 一共有四方参与：Client 端、Server 端、ServiceManager 端还有 Binder 驱动。这个是系统服务的 Binder 通信，只有系统服务才能注册到 ServiceManager 中，应用服务的 Binder 是不能注册到 ServiceManager 的，通过不了权限验证的。
+2. Client 是应用进程。Server 是系统服务，系统服务有可能是运行在 System_Server 进程，也有可能是运行在单独的进程中。ServiceManager 是单独的系统进程。
+3. 这里面无论哪个进程，它们在启动是时候，第一件事就是要先启动 Binder 机制，这个是 Binder 通信的前提。启动 Binder 机制的过程：
+
+<img src="https://note-austen-1256667106.cos.ap-beijing.myqcloud.com/2020-10-06-160154.png" alt="image-20201007000152294" style="zoom:25%;" />
+
+* 打开 Binder 驱动 （Binder 驱动就会为这个进程在内核中创立一套档案）
+* 内存映射、分配缓存区（将上一步返回的 描述符 进行内存映射、分配缓存区，接下来的 Binder 通信要用到这个缓存区）
+* 启动 Binder 线程（启动binder 线程一方面是要把这个线程注册到 binder 驱动， 另一方面这个线程要进入 Loop 循环，然后不断跟 binder 驱动进行交互）
+
+4. 启动 Binder 机制后，就要真正的进行 Binder 通信了。这个首先要从 ServiceManger 开始说起，在 ServiceManager 的入口函数中
+
+<img src="https://note-austen-1256667106.cos.ap-beijing.myqcloud.com/2020-10-06-195649.png" alt="image-20201007035647902" style="zoom: 33%;" />
+
+1）`binder_open`  打开 Binder 驱动进行内存映射。
+
+2）`binder_become_context_manager` 这个函数是告诉 Binder 驱动我就是 ServiceManger，我就是服务的中转站，无论是注册、查询都可以来找我。 
+
+3）`binder_loop()`  
+
+<img src="https://note-austen-1256667106.cos.ap-beijing.myqcloud.com/2020-10-19-165652.png" alt="image-20201007040832312" style="zoom:33%;" />
+
+3-1）这个函数首先将当前线程注册成 binder 线程，BC_ENTER_LOOPER 把这个指令写到 binder 驱动 ，就表示把当前线程注册成 binder 线程，此时线程就是 ServiceManager 的主线程。
+
+3-2）然后在一个 for 循环里面，bwr.read_size > 0 是读，把 binder 驱动发过来的数据读到 bwr 中，就是请求读进来
+
+3-3）读进来之后，解析这个请求，然后再去调这个 func 回调函数，去处理这个请求。
+
+
+
+### 对于 Android 系统来讲，它基于 Linux 系统，Linux 本身就存在比如 管道、Socket、信号、共享内存等 IPC 机制，Android 系统为什么还要用 Binder 机制来实现进程间通信？
+
+
 
 ### 一、Android Framework 里面用到了那些 IPC 方式？
 
