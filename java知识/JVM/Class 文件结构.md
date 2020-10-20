@@ -144,3 +144,11 @@ Java 语言中的 各种变量、关键字 和 运算符号 的语义最终都�
 
 3）、`bytes`: u1 类型的数组，保存真正的常量数据。
 
+```c++
+CONSTANT_MethodType_info {
+	u1 tag; // 10
+	u2 class_index; // 指向声明方法的 类描述符的索引项 是在常量池中的索引项
+	u2 name_and_type_index; // 指向名称及类型描述符的 索引项
+}
+```
+
