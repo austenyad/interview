@@ -35,8 +35,8 @@ Java 语言中的 各种变量、关键字 和 运算符号 的语义最终都�
 ```
  ClassFile { 
         u4 magic;  // 魔法数字，表明当前文件是.class文件，固定0xCAFEBABE
-        u2 minor_version; // 分别为Class文件的副版本和主版本
-        u2 major_version; 
+        u2 minor_version; // Class文件的次版本号
+        u2 major_version; // Class文件的主版本号
         u2 constant_pool_count; // 常量池计数
         cp_info constant_pool[constant_pool_count-1];  // 常量池内容
         u2 access_flags; // 类访问标识
@@ -80,7 +80,7 @@ Java 语言中的 各种变量、关键字 和 运算符号 的语义最终都�
 
 ##### 1. 字面量（Literal）
 
-字面量比较接近 Java 语言层面的常量概念，如文本字符串、生命为 final 的常量值等
+字面量比较接近 Java 语言层面的常量概念，如文本字符串、声明为 final 的常量值等
 
 ##### 2. 符号引用（Symbolic References）
 
@@ -92,7 +92,7 @@ Java 语言中的 各种变量、关键字 和 运算符号 的语义最终都�
 
 此外，**在虚拟机加载 Class 文件的时候会进行动态链接，因此其字段、方法的符合引用不经过运行期转换的话就无法得到真正的内存入口地址，也就是无法直接被虚拟机使用。当虚拟机运行时，需要从常量池获取对应的符号引用，再在类创建或运行时进行解析，并翻译到具体的内存地址只中。**
 
-**constant_pool** 中存储了一个一个的 cp_info 信息，并且每个 cp_info 的第一个字节（即一个 u1 类型的标志位）标识了当前**常量池中 常量项的 类型**，其后才是具体的常量项内容。
+常量池中每一项都是一个表，**constant_pool** 中存储了一个一个的 cp_info 信息，并且每个 cp_info 的第一个字节（即一个 u1 类型的标志位）标识了当前**常量池中 常量项的 类型**，其后才是具体的常量项内容。
 
 下面是，**常量项的类型**，如下表：
 
@@ -132,7 +132,7 @@ Java 语言中的 各种变量、关键字 和 运算符号 的语义最终都�
   CONSTANT_Utf8_info {
         u1 tag; 
         u2 length; 
-        u1 bytes[length]; 
+        u1 bytes[length]; // 字节数组
   }
 ```
 
