@@ -23,7 +23,7 @@ Binder 可以分为两端，一个是 Client 端，一个是 Server 端。Client
 
 **方便**：Linux 只提供最底层的数据传输方式，就相当于只有一个物理层，但是正真的跨进程调用就涉及到的事就太多了，就好比我只给你一根电话线，你就能打电话吗？当然不行！！！
 
-当你有了电话线，你只有消息的传输通道，我不用知道你在隔壁还是在千里之外，但是我说的话是声音，你得先把声音转成点电信号，才能通过电话线发出去，当然你还要知道发给谁，那么多的人！当你知道发给谁了，你还要知道怎么把它转发给他，那么多人你可能还需要一个转发中心，让转发中心统一处理。而且对于接受方来说，突然来的一股电流，你就能知道是谁发了消息，并且发了什么消息吗？当然不行，你得先要把电信号转成声音，所以我们看到光要一根电话线是远远不够的，上层还要好多好多工作要做。我们要在 Linux 提供的底层跨进程机制上搭建一整套方便的框架才行，不然的话在应用层开发的我们就太痛苦了。
+当你有了电话线，你只有消息的传输通道，我不用知道你在隔壁还是在千里之外，但是我说的话是声音，你得先把声音转成点电信号，才能通过电话线发出去，当然你还要知道发给谁，那么多的人！当你知道发给谁了，你还要知道怎么把它转发给他，那么多人你可能还需要一个转发中心。而且对于接受方来说，突然来的一股电流，你就能知道是谁发了消息，并且发了什么消息吗？当然不行，你得先要把电信号转成声音，所以我们看到光要一根电话线是远远不够的，上层还要好多好多工作要做。我们要在 Linux 提供的底层跨进程机制上搭建一整套方便的框架才行，不然的话在应用层开发的我们就太痛苦了。
 
 **安全：**就像打电话，不能说只要有电话就接电话，我得看来电号码才行，或者说最好要有一个骚扰拦截机制 等等。
 
@@ -45,69 +45,151 @@ binder 的使用逻辑简单直接不会出什么问题，共享内存虽然性�
 
 **安全**
 
-普通的 Linux 跨进程通信方式其实是非常不安全的，比如说像 Socket 它的 IP 地址都是开发的，别人知道它的 IP 地址就能来连接它了。或者说是 命名管道也是你管道的名称了就能往里面写东西了，这个是很容易被人利用的，这里主要的问题是 我们拿不到调用方可靠的身份信息，这个身份信息你总不能说让调用方自己去填写吧！这个明显是不可靠的。可靠的方式应该只能由 IPC 机制本身在内核态中添加，这一点 Binder 是做到了。
+普通的 Linux 跨进程通信方式其实是非常不安全的，比如说像 Socket 它的 IP 地址都是开方的，别人知道它的 IP 地址就能来连接它了。或者说是 命名管道也是你管道的名称了就能往里面写东西了，这个是很容易被人利用的，这里主要的问题是 我们拿不到调用方可靠的身份信息，这个身份信息你总不能说让调用方自己去填写吧！这个明显是不可靠的。可靠的方式应该只能由 IPC 机制本身在内核态中添加，这一点 Binder 是做到了。
 
 ### Binder 的通信架构
 
 <img src="https://note-austen-1256667106.cos.ap-beijing.myqcloud.com/2020-10-06-104122.png" alt="image-20201006184121476" style="zoom:33%;" />
 
-1. 一共有四方参与：Client 端、Server 端、ServiceManager 端还有 Binder 驱动。这个是系统服务的 Binder 通信，只有系统服务才能注册到 ServiceManager 中，应用服务的 Binder 是不能注册到 ServiceManager 的，通过不了权限验证的。
-2. Client 是应用进程。Server 是系统服务，系统服务有可能是运行在 System_Server 进程，也有可能是运行在单独的进程中。ServiceManager 是单独的系统进程。
-3. 这里面无论哪个进程，它们在启动是时候，第一件事就是要先启动 Binder 机制，这个是 Binder 通信的前提。启动 Binder 机制的过程：
+**（一）**一共有四方参与：Client 端、Server 端、ServiceManager 端还有 Binder 驱动。这个是系统服务的 Binder 通信，只有系统服务才能注册到 ServiceManager 中，应用服务的 Binder 是不能注册到 ServiceManager 的，通过不了权限验证的。
+
+**（二）**Client 是应用进程。Server 是系统服务，系统服务有可能是运行在 System_Server 进程，也有可能是运行在单独的进程中。ServiceManager 是单独的系统进程。
+
+**（三）**这里面无论哪个进程，它们在启动是时候，第一件事就是要先启动 Binder 机制，这是 Binder 通信的前提。启动 Binder 机制的过程：
 
 <img src="https://note-austen-1256667106.cos.ap-beijing.myqcloud.com/2020-10-06-160154.png" alt="image-20201007000152294" style="zoom:25%;" />
 
-* 打开 Binder 驱动 （Binder 驱动就会为这个进程在内核中创立一套档案）
-* 内存映射、分配缓存区（将上一步返回的 描述符 进行内存映射、分配缓存区，接下来的 Binder 通信要用到这个缓存区）
-* 启动 Binder 线程（启动binder 线程一方面是要把这个线程注册到 binder 驱动， 另一方面这个线程要进入 Loop 循环，然后不断跟 binder 驱动进行交互）
+**3.1**	打开 Binder 驱动 （Binder 驱动就会为这个进程在内核中创立一套档案）
 
-4. 启动 Binder 机制后，就要真正的进行 Binder 通信了。这个首先要从 ServiceManger 开始说起，在 ServiceManager 的入口函数中
+**3.2**	内存映射、分配缓存区（将上一步返回的 描述符 进行内存映射、分配缓存区，接下来的 Binder 通信要用到这个缓存区）
+
+**3.3**	启动 Binder 线程（启动binder 线程一方面是要把这个线程注册到 binder 驱动， 另一方面这个线程要进入 Loop 循环，然后不断跟 binder 驱动进行交互）
+
+**（四）**启动 Binder 机制后，就要真正的进行 Binder 通信了。这个首先要从 ServiceManger 开始说起，在 ServiceManager 的入口函数中
 
 <img src="https://note-austen-1256667106.cos.ap-beijing.myqcloud.com/2020-10-06-195649.png" alt="image-20201007035647902" style="zoom: 33%;" />
 
-1）`binder_open`  打开 Binder 驱动进行内存映射。
+**4.1**	`binder_open`  打开 Binder 驱动进行内存映射。
 
-2）`binder_become_context_manager` 这个函数是告诉 Binder 驱动我就是 ServiceManger，我就是服务的中转站，无论是注册、查询都可以来找我。 
+**4.2**	`binder_become_context_manager` 这个函数是告诉 Binder 驱动我就是 ServiceManger，我就是服务的中转站，无论是注册、查询都可以来找我。 
 
-3）`binder_loop()`  
+**4.3**	`binder_loop()`  
 
 <img src="https://note-austen-1256667106.cos.ap-beijing.myqcloud.com/2020-10-19-165652.png" alt="image-20201007040832312" style="zoom:33%;" />
 
-3-1）这个函数首先将当前线程注册成 binder 线程，BC_ENTER_LOOPER 把这个指令写到 binder 驱动 ，就表示把当前线程注册成 binder 线程，此时线程就是 ServiceManager 的主线程。
+**4.3—1）**这个函数首先将当前线程注册成 binder 线程，BC_ENTER_LOOPER 把这个指令写到 binder 驱动 ，就表示把当前线程注册成 binder 线程，此时线程就是 ServiceManager 的主线程。
 
-3-2）然后在一个 for 循环里面，bwr.read_size > 0 是读，把 binder 驱动发过来的数据读到 bwr 中，就是请求读进来
+**4.3—2）**然后在一个 for 循环里面，bwr.read_size > 0 是读，把 binder 驱动发过来的数据读到 bwr 中，就是请求读进来
 
-3-3）读进来之后，解析这个请求，然后再去调这个 func 回调函数，去处理这个请求。
+**4.3—3）**读进来之后，解析这个请求，然后再去调这个 func 回调函数，去处理这个请求。
 
+**4.4**	ServiceManager 启动之后，就进入 Loop 循环了，等待 Client 端和 Server 端的请求。Client 端是应用程序进程，Server 端是系统服务，系统服务启动之后才是应用启动，所以是 Server 端先和 ServiceManager 进行交互的，Server 启动之后它要把自己的服务服务注册到 ServiceManager 中，这个过程我们可以以系统服务 SufurceFlinger 来作为例子看一下它是怎么注册的：
 
+SufaceFlinger 是允许在单独的进程当中，这个进程是由 init 进程根据 init.rc 的启动配置文件来启动的进程。SufaceFlinger 启动之后，会执行它的 main 函数：
 
-### 对于 Android 系统来讲，它基于 Linux 系统，Linux 本身就存在比如 管道、Socket、信号、共享内存等 IPC 机制，Android 系统为什么还要用 Binder 机制来实现进程间通信？
-
-
-
-### 什么是 Binder 机制？
-
-Android 中的 Binder 机制是一种进程间通信机制（IPC，Inter-Process Communication），它更侧重 数据的传递。
-
-Binder 机制更确切的说法应该是 远程过程调用协议(RPC，Remote Procedure Call)，因为它的架构就是 C/S 模式，并且封装了关于远程调用的各种细节，包括 确定谁来发送数据，谁来接受数据，具体的数据又需要怎么处理，只不过是本地系统的进程之间的通信。
-
-> 远程过程调用说的是一台计算机的程序调用另一台计算机方法，而程序员就像调用本地程序一样，RPC 是一种服务器-客户端模式，实现了一个通过 **发送请求-接受回应** 进行信息交互的系统。
-
-### Binder 机制它是怎么工作的？
-
-基础原理
-
-进程间通信肯定有两个进程
+<img src="https://note-austen-1256667106.cos.ap-beijing.myqcloud.com/2020-10-06-202811.png" alt="image-20201007042809815" style="zoom:33%;" />
 
 
 
-数据传递
+**4.4—1）**启动 binder 机制，这是 binder 通信的前提
+
+**4.4—2）**创建 SurfaceFlinger 对象，这个 SurfaceFlinger 对象它同时也实现 binder 接口是 binder 的实体对象
+
+**4.4—3）**创建好 SurfaceFlinger 对象之后，就要向 ServiceManger 进行注册了，注册的逻辑是：首先通过 `defaultServiceManager()` 方法拿到 ServiceManager 的 BpBinder 对象，这个 BpBinder 对象是 ServiceManger 的 binder 代理对象，通过这个代理对象就可以向 ServiceManager 来发起远程调用了
+
+**4.4—4）**拿到 ServiceManager 的 BpBinder 对象之后，调用它的 `addService(fingler)` 方法，将 SurfaceFinger 这个 Binder 对象，即服务添加 ServiceManager 中。最后 SurfaceFlinger 对象调用自己的 `run()` 方法，进入 Loop 循序，这个 Loop 循环是来接受应用进程传递过来的 UI 绘制数据的。
+
+**上面重要函数实现的细节**
+
+* ​	**defalutServiceManager()** ：获取 ServiceManager 的 Binder 对象
+
+ 这个函数是获取 ServiceManager 的 BpBinder 对象，它的具体实现是：
+
+它是怎么获取 ServiceManager 的 Binder 对象的？
+
+<img src="https://note-austen-1256667106.cos.ap-beijing.myqcloud.com/2020-10-06-203602.png" alt="image-20201007043600692" style="zoom:33%;" />
+
+​		(1) 首先有一个 `gDefaultServiceManager` 变量如果它不为 NULL 的话就直接返回，就是说 已经获取到了 ServiceManager 的 Binder 对象之后，就不会去再获取了。
+
+​		(2) 如果 `gDefaultServiceManager` 变量为空那么就要获取 ServiceManager 的 Binder 对象了，
+
+获取的方式是在一个 while 循环里面，去调用 `ProcessState::self() -> getContextObject(NULL)`  方法，这个方法是正真获取 ServiceManager 的 Binder 对象的，`getContextObject(NULL)` 里面调用了 `getStringProxyHandle(0)` 这个调用是获取 0 号 Handle 值对应的 Binder 引用。（其实底层的 binder 驱动交互的时候它是不分什么 BinderProxy/BpBinder/BBinder 的，它只认一个 int 类型的 handle 值，上层封装的一层层对象其实就是一个 handle 值）这个 0 号 Hanle 值是上面我们说的当启动 ServiceManager 的时候 通过调用 `binder_become_context_manager()` 这个方法将 0 号 Handle 值注册到 Binder 驱动的，其他进程通过 0 号 Handle 值来获取 ServiceManager 对应的 Binder 引用，这个是 0 号 Hanle 值对应 ServiceManger 是系统公认的。
+
+​		(3) 如果调用 `getContextObject(NULL)` 获取的 ServiceManager 的 Binder 对象为空，那么说明 ServiceManager 进程还没有启动，因为启动 ServiceManager 是系统自动启动的，那么要做的就是调用 `spleep(1)` 等待 ServiceManager 进程启动，由于是 while 循环，还会调用 `getContextObject(NULL)` 通过 0 号 Handle 来获取 ServiceManager 的 Binder 对象，直到获取成功。
+
+* **addService(....)** : 拿到 ServiceManager 的binder 对象后，调用 addService 将正真的服务的对象注册到 ServiceManager 当中。
+
+<img src="https://note-austen-1256667106.cos.ap-beijing.myqcloud.com/2020-10-06-205034.png" alt="image-20201007045033207" style="zoom:33%;" />
+
+（1）`addService()` 方法，首先会准备两个 Parcel 类型的对象，一个是 data 要发到驱动的参数，一个 reply 就是驱动返回的结果，那么把要发到 binder 驱动的参数都塞到 data 里面，包括上面的 SurfaceFlinger 的 binder 对象，通过调用 data 的 `writeStrongBinder(service)` 方法也写到 Pacel 里面。
+
+（2）然后通过 `remote()` 函数拿到 ServiceManager 的 BinderProxy 对象，然后调用 BinderProxy 的 `transact` 把请求发出去，请求参数是 ：请求码：`ADD_SERVICE_TRANSACTION` ，发过去的数据 data，还有 reply binder 驱动要返回的数据会写到 reply 里面。
+
+![image-20201020235052250](https://note-austen-1256667106.cos.ap-beijing.myqcloud.com/2020-10-20-155054.png)
+
+（3）这 BinderProxy 的 `transact` 函数会这个请求调用转发到 `IPCThreadState` 对象的 `transant` 方法，这个函数的第一个值就是整形的 Handle 值，再次说明底层在和驱动交换的时候它是不分什么 bpBinder/binderProxy 这些对象的，驱动只认这个 Handle 值，code 就是函数请求码，data 就是要发个 binder 驱动的参数，reply 就是 binder 驱动要返回的数据写到 reply 里面，flags 就是一些标志。
+
+（4）在 **IPCThreadState** 的 `transact` 函数里面：
+
+<img src="https://note-austen-1256667106.cos.ap-beijing.myqcloud.com/2020-10-07-045137.png" alt="image-20201007125135708" style="zoom:33%;" />
+
+（5）首先调用 `writeTransactionData()`  这个函数就是要将写进 binder 驱动的数据准备好，因为上层传递过来数据是 Parcel 对象 binder 驱动是不认识这个数据结构的，这个函数就是把 Parcle 数据转换成 `BinderTransactionData` 这个数据结构。
+
+（6）数据准备好之后，会判读 如果 flags 是 `one_way`  ，那么就不用等回复了，如果不是 `one_way` 就要带 binder驱动要回复的参数 reply， 并调用 `waiteForResponse(reply)`来和 binder 驱动交互，`waitForResponse()` 是要走具体的 binder 协议的（具体步骤下面讲）。
+
+（7）那么这个请求到了 Server 端是怎么处理请求的？Binder 的 Server 端处理请求都是在 `onTransact` 函数中处的：
+
+<img src="https://note-austen-1256667106.cos.ap-beijing.myqcloud.com/2020-10-06-211117.png" alt="image-20201007051115905" style="zoom:33%;" />
+
+（8）在 Server 端的 `onTransact()` 函数中，首先通过 Client 端发过来的 Parcel 数据取出请求码 code，进入到 `ADD_SERVICE_TRANSACTION` 这个 switch case 中，
+
+（9）再从 Parcel 通过 `readStrongBinder()`  把系统服务的 binder (也就是SurfaceFlinger的 binder 对象) ，**这里读出来的 binder 对象是根据 binder 引用的 Handle 值 binderProxy 对象而已**，然后再调用本地的 `addSerivce` 函数把 binder 引用保存到好，然后往 reply 里面写一个返回值。Server 端注册到 ServiceManager 的过程就结束了。
+
+### binder 的分层架构
+
+<img src="https://note-austen-1256667106.cos.ap-beijing.myqcloud.com/2020-10-06-211630.png" alt="image-20201007051628007" style="zoom:33%;" />
 
 
 
-### Android 系统基于 Linux ，Linux 已经存在像 管道、Socket 、共享内存、信号 等 IPC 机制，Android 为什么还要使用 Binder 机制？
+分层架构图可以分成几个维度来看：
 
- 
+1. 扮演是角色来看可以分为：Client 端、Server 端、binder 驱动
+2. 从分层的角度来看可以分为：应用层 ——> Framework 层（framework 层又可以分为 Java 层和 Native 层） ——> 驱动层。
+3. 从 Binder 对象的角度来看它又可以分成两端：一个是代理端、一个是实体端。
+
+大致过程是：
+
+​	3.1 当我们在 Client 端拿到一个Binder对象的 Proxy (代理对象)，我们要发起 IPC 调用，这个调用就是把请求向下丢给 BinderProxy。
+
+​	3.2 然后这个请求继续往下走又会丢到 Native 层的 Proxy（也就是 BpBinder 对象）。
+
+​	3.3 BpBinder 对象又会把请求转交给 **IPCThreadState** 对象，并通过它的 `transact` 函数发送请求，发送到 Binder 驱动
+
+​	3.4 Binder 驱动再转发，转发到 Server 进程，然后在 Server 进程的 Binder 线程里面就会执行 `onTransact` 函数，再一层层往上传到 Server 进程的应用层。**这个分层和网络传输中的分层很像**。
+
+#### **面试：**
+
+* binder 是干嘛的？
+* Android 为什么要选用 binder ?
+* binder 的通信架构图？
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+###  对于 Android 系统来讲，它基于 Linux 系统，Linux 本身就存在比如 管道、Socket、信号、共享内存等 IPC 机制，Android 系统为什么还要用 Binder 机制来实现进程间通信？
+
+
 
 ### 一、Android Framework 里面用到了那些 IPC 方式？
 
@@ -385,147 +467,6 @@ AMS 要启动一个应用组件，比如说要启动一个 Activity，结果 AMS
 
 
 
-### 三、谈谈你对 binder 的理解
-
-考察点：
-
-1. binder 是干嘛的？
-2. binder 存在的意义是什么？为什么不用别的替代方案呢？
-3. binder 的架构原理又是怎么样的呢？
-
-#### 1. binder 是干嘛的？
-
-总的来说它就是用来通信的，binder 可以分成两端，一个是 Client 端、一个是 Server 端；Client 端和 Server 端可以在同一个进程，也可以不在同一个进程。Client 端可以向 Server 端发起远程调用，当然也可以传递数据，数据当做函数的参数来传递。特点是 远程调用时进程的边界是比较模糊的，你不用关心对方是在哪个进程。
-
-可以自己思考一下 自己来实现一套远程调用机制的话，你会怎么做？
-
-<img src="https://note-austen-1256667106.cos.ap-beijing.myqcloud.com/2020-10-06-184615.png" alt="image-20201007024614110" style="zoom:25%;" />
-
-答：Client 端要调用 Server 端的一个 call 函数
-
-1. 首先 Client 端要将函数的参数序列化到一个 buffer 
-2. 然后再通过 Linux 的各自跨进程通信方式把 buffer 传到 Server 端
-3. 在 Server 端再把 buffer 反序列化，还原成各个参数，然后再去调用这个对应的函数
-4. 最后在把这个函数的返回结果 原路返回到 Clinet 端
-
-这里面要考虑几个问题： 1. 性能问题 （跨进程传递 buffer 的时候要能够快，尽量减少数据拷贝）2. 方便（因为 Linux 只提供最底层数据传输通道，相等于只有一个物理层，但是正真的跨进程调用涉及到的事太多了，就好比我只给了你一根电话线，你就能打电话吗？当然不行，你确实有了电话线之后呢，就有了消息的传输通道，我用知道你是在隔壁还是在千里之外，但是我说的话是声音啊，你要把它转成电信号，才能通过电信号发出去，而且你要知道发给谁，那么多人你知道它是谁了你还要知道怎么转发给他，这里又需要一个转接中心，而且对于接受方来说，突然电话线来个一股电流，你就光凭一股电流你就能知道是谁发了消息，又发了是什么消息？你得先把电信号转成声音信号，所以我们可以看到，就光凭一根电话线是远远不够的，上层还有好多好多工作要做，我们要在Linux 底层提供的跨进程通信传输机制上面再搭建一整套框架才行，不然的话应用层开发就太痛苦了）3. 安全 （就像打电话，只有电话进来我就要接，哪我是不是还有看看来号码对不对，或者说要有一个骚扰拦截机制等等）总之，一个完善的跨进程通信机制其实还是挺复杂的，性能要好，用起来要方便而且还非常的安全，binder 机制就是一套怎么好用的工具。
-
-#### 2. binder 存在的意义是什么？为什么不用别的替代方案呢？
-
-binder 是跑在驱动层的，它是在内核态，并没有使用 Linux 的跨进程通信机制，它是自己发明一套机制。
-
-* **性能**  Linux 里面常用的一些跨进程通信机制，比如说管道、Socket，它们在跨进程通信的时候都是需要内存来做中转的，这个就意味这两次数据拷贝，一次从应用层拷贝到内核，还有一个成内核拷贝到应用层，但是 binder 是有区别的，binder 是把一块物理内存同时映射到内核和用户进程的内核空间，这样当你把数据拷贝到内核空间的时候，其实就相当于也拷贝到另一个进程的用户空间了，所以只用拷贝一次。
-* **方便易用** 逻辑简单直接，共享内存虽然性能很好，但是用起来很复杂，远远没有我们这个 binder 好用
-* **安全** 普通的 Linux 跨进程通信是非常不安全的，比如说像 Socket 它的 IP 地址都是开方的，别人知道它的 IP 地址就能连接它了，或者说 命名管道也是，你知道这个管道的名称了也能往里面写东西，这个是很容易被人恶意利用的。 主要是 **我们拿不动调用方 可靠的身份信息** ，这个身份信息你总不能说让调用方自己去填，这个明显是不可靠的。可靠的方式是怎么做呢？身份标记只能由 IPC 机制本身在内核态中添加。
-
-
-
-#### 3. binder 的架构原理又是怎么样的呢？
-
-<img src="https://note-austen-1256667106.cos.ap-beijing.myqcloud.com/2020-10-06-104122.png" alt="image-20201006184121476" style="zoom:33%;" />
-
-1. 一共有四方参与: Client 端、Server 端、ServiceManger端、binder 驱动。
-2. 上面是展示的是 系统服务的 binder 通信，只有系统服务才能注册到 ServiceManger 中，应用层的服务是不能注册到 ServiceManger 中的，通过不了权限验证的。
-3. Client 是应用进程；Server 是系统服务，它可能是跑在 SystemServer 进程也可能是单独的进程；ServiceManger 是一个单独的系统进程。这里无论哪个进程它们在启动的时候第一件事都是要启动 binder 进制，这个是 binder 通信的前提。
-
-
-
-#### 怎么启动 binder 机制？
-
-<img src="https://note-austen-1256667106.cos.ap-beijing.myqcloud.com/2020-10-06-160154.png" alt="image-20201007000152294" style="zoom:25%;" />
-
-* 打开 Binder 驱动 （Binder 驱动就会为这个进程创立一套档案）
-* 内存映射、分配缓存区（将上一步返回的 描述符 进行内存映射、分配缓存区，接下来的 Binder 通信要用到这个缓存区）
-* 启动 Binder 线程（启动binder 线程一方面是要把这个线程注册到 binder 驱动， 另一方面这个线程要进入 Loop 循环，不断跟 binder 驱动进行交互）
-
-##### binder 通信
-
-frameworks/native/cmds/servicemanager/service_manager.c ![image-20201007035647902](https://note-austen-1256667106.cos.ap-beijing.myqcloud.com/2020-10-06-195649.png)
-
-上面是 ServiceManger 的入口函数 main 函数
-
-1. 打开 binder 驱动，映射内存
-2. `binder_become_context_manager（bs）` binder 成为了上线文的管理者，其实就是告诉 binder 驱动我就是 ServiceManger，我就是那个中转站，无论是注册函数查询都一个来找我
-3. 进入 binder loop 循环 
-
-![image-20201007040832312](https://note-austen-1256667106.cos.ap-beijing.myqcloud.com/2020-10-06-200834.png)
-
-1. 这个函数首先将当前线程注册成 binder 线程，BC_ENTER_LOOPER 把这个指令写到 binder 驱动 ，就表示把当前线程注册成 binder 线程，此时线程就是 ServiceManager 的主线程。
-2. 然后在一个 for 循环里面，bwr.read_size > 0 是读，把 binder 驱动发过来的数据读到 bwr 中，就是请求读进来
-3. 读进来之后，解析这个请求，然后再去调这个 func 回调函数，去处理这个请求。
-
-ServiceManger 启动 binder 机制之后进入一个 Loop 循环，等待 Client 端、Server 端的请求，Server 是系统服务，Client 端一般是应用程序，系统服务启动完之后才是应用启动，那么就是 Server 端先和 ServiceManger 进行交互的，Server 启动的时候，它要把自己的 binder 对象注册到 ServiceManger，我们看一下代码：
-
-以一个系统服务 SurfaceFlinger 为例看一下它是怎么注册到 ServiceManger 中的：
-
-![image-20201007042809815](https://note-austen-1256667106.cos.ap-beijing.myqcloud.com/2020-10-06-202811.png)
-
-上面是 SurfaceFlinger 的入口函数即这个 main 函数，
-
-1. 启动 binder 机制，映射内存，启动 binder 线程；
-2. 下面就是 binder 对象的初始化了，对于 SurfaceFlinger 来说它的业务类对象就是 SurfaceFlinger ,它同时也是一个 binder 实体对象。
-3. 向 ServiceManger 注册。首先通过 `defaultServiceManager()` 拿到 ServiceManger 的 bpbinder，然后发起 `addService` 调用，把 flinger 这个对象传到 ServiceManager。最后进入一个 Loop 循环。
-
-怎么获取 ServiceManger 获取 binder 对象？
-
-![image-20201007043600692](https://note-austen-1256667106.cos.ap-beijing.myqcloud.com/2020-10-06-203602.png)
-
-1. gDefaultServiceManager 只要初始一次
-2.   getContextObject 是正真获取 ServiceManger 的 binder 对象的
-
-```c++
-sp<IBinder> ProcessState::getContextObject(const sp<IBinder>& /*caller*/)
-{
-    return getStrongProxyForHandle(0);
-}
-```
-
-3. `getStrongProxyForHandle(0)` 它查的是 0 号 handler 值对应的 binder 引用。 如果没有查到就说明可能 ServiceManger 自己还没有注册到 binder 驱动。那么从上面的代码来看 sleep(1) ，等一会在去获取在试一试，直到获取的 ServiceManger 的 binder 对象
-
-##### addService 的实现
-
-![image-20201007045033207](https://note-austen-1256667106.cos.ap-beijing.myqcloud.com/2020-10-06-205034.png)
-
-1. data 是发到驱动的参数，reply 是驱动返回的结果
-2. 然后把参数都放进 data 里面，包括这个 finlinger 系统服务的 binder 对象，也写到 Parcel 里面通过 `writeStrongBinder(service)` 方法。
-3. `remote() ` 拿到 ServiceManger 的 binderProxy 对象，然后调用它的 transact(ADD_SERVICE_TRANSACTION, data, &reply) 把这个请求发出去，这个请求的请求码是 ADD_SERVICE_TRANSACTION。
-
-```c++
-status_t IPCThreadState::transact(int32_t handle,
-                                  uint32_t code, const Parcel& data,
-                                  Parcel* reply, uint32_t flags)
-```
-
-![image-20201007050018786](https://note-austen-1256667106.cos.ap-beijing.myqcloud.com/2020-10-06-210020.png)
-
-底层在跟  驱动交换的时候它是不分 bpBinder 还是 binderProxy 的，它其实只认这个 handler 值，所以我们看上层封装的这么一层层对象它的核心就是这么一个 handle 值。
-
-1. ```C++
-    err = writeTransactionData(BC_TRANSACTION_SG, flags, handle, code, data, nullptr);
-   ```
-
-   就是把要写到 binder 驱动的数据准备好，我们要知道 Pacel 这个数据结构 binder 驱动是不认识的，所以得先把它转成 binder 驱动认识的数据，再发给 binder 驱动，就是 BinderTransactionData 这个数据结构。
-
-2. 如果是 One_way 的话就不用等回复了：`err = waitForResponse(nullptr, nullptr);`
-
-3. 如果不是 One_way ，哪就要带一个 reply 来接受回复
-
-4. waitForResponse 就是和 binder 驱动进行交互，走通信协议的，具体实现先不说。
-
-##### 我们看请求到了 Service 端是怎么处理的
-
-![image-20201007051115905](https://note-austen-1256667106.cos.ap-beijing.myqcloud.com/2020-10-06-211117.png)
-
-上面代码就是 ServiceManger 的 Server 端处理了，binder 的 Server 端处理请求都是在 OnTransact 函数里面
-
-1. 根据 Code 找到 ADD_SERVICE_TRANSACTION: 这个 switch case。
-2. 然后从 Pacel 里面把这个系统服务的 binder 读出来，这里读出来其实就是根据 binder 引用的 handle 值封装的一个 binderProxy 对象而已。
-3. 再调用本地的 addService 函数把它存好，存好了之后往这个 reply 里面写一个 返回值，Ser
-
-
-
-
-
 ### 四、一次完整的 IPC 通信流程是怎么样的
 
 考察点：
@@ -534,11 +475,7 @@ status_t IPCThreadState::transact(int32_t handle,
 2. 了解 应用 和 biner 驱动的交互方式（两块：1. Client 端和 binder 驱动的交互 2. Server 端和 binder 驱动的交互）
 3. 了解 IPC 过程中的通信协议
 
-#### binder 的分层架构
 
-<img src="https://note-austen-1256667106.cos.ap-beijing.myqcloud.com/2020-10-06-211630.png" alt="image-20201007051628007" style="zoom:33%;" />
-
-这个图可以分成几个维度来看，首先从角色维度来看：一个是 Client 、一个是 Server 、还有一个是 binder 	驱动；分层的角度来看，它有可以分成三层：1. 应用层 2.framework 层（framework 层又分成 Java 层和 native 层） 3. 驱动层；从 binder 对象角度来看 它也可以分成两端：1. 代理端 2. 实体端，从 Client 端开始，首先从 Client 端拿到一个 Proxy 发起 IPC 调用，这个其实是将请求丢到了 BinderProxy ，然后这个请求继续 往下丢，丢到 native 层的 BpBinder，然后这个又会继续往下丢，丢到了 IPCThreadState 的 transact，这个 transact 就把请求丢给驱动，驱动再转发到 Server 进程然后就会在这个 Server 进程的 binder 线程处理，执行它的 onTransact  ，然后这个请求又会一层一层的往上传，传到 BBiner -> Binder -> 再传到业务层，传给这个业务层的接口对象 Stub 。总的来说这个分层跟网络传输分层的结构有点像，可以进行对比一下。
 
 接下来我们看一下这个请求是怎么到 Server 端的：
 
