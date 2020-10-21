@@ -147,8 +147,246 @@ Java 语言中的 各种变量、关键字 和 运算符号 的语义最终都�
 ```c++
 CONSTANT_MethodType_info {
 	u1 tag; // 10
-	u2 class_index; // 指向声明方法的 类描述符的索引项 是在常量池中的索引项
+	u2 class_index; // 指向声明方法的 类描述符的索引项 
 	u2 name_and_type_index; // 指向名称及类型描述符的 索引项
 }
 ```
 
+
+
+字段类型 常量项类型
+
+```c
+CONSTANT_Filed_info{
+	u1 tag; // 9
+    u2 class_index; // 指向声明字段的类或者接口描述符 CONSTANT_Class_info 的索引项
+    u2 name_and_type_index; // 指向字段描述符 CONSTANT_NameAndType 的索引项
+}
+```
+
+类 常量项类型（描述类或接口信息）
+
+```c
+CONSTANT_Class_info{
+	u1 tag; // 7
+    u2 name_index; // 指向全限定名常量项索引
+}
+```
+
+#### 常量项 Integer、Long、Float、Double
+
+常量项 Integer、Long、Float、Double 对应的数据结构如下所示：
+
+```c
+CONSTANT_Integer_info{
+	u1 tag;// 3
+	u4 bytes; // 按高位在前的 int 值
+}
+```
+
+```c
+CONSTANT_Long_info{
+	u1 tag;// 5;
+    u8 bytes; //  按高位在前的 long 值
+}
+```
+
+```c
+CONSTANT_Float_info{
+	u1 tag; // 4
+    u4 bytes; // 按高位在前存储的 float 值
+}
+```
+
+```c
+CONSTANT_Double_info{
+	u1 tag; // 6
+    u8 bytes;// 按高位在前存储的 double 值
+}
+```
+
+可以看到 **在每一个非基本类型的常量项之中，除了其 tag 之外，最终包含的内容都是字符串。正是因为这种互相引用的模式，才能有效的节省 Class 文件的空间。**
+
+### 3 信息描述规则
+
+对于 JVM 来说，其 **采用了字符串的形式来描述数据类型、成员变量及成员函数 这三类（描述符）** 因此，在讨论接下来各个 Class 表项之前，我们需要了解下 JVM 中的信息描述规则。下面我们来对此进行探讨。
+
+# 1、数据类型
+
+根据数据类型通常包含有 **原始数据类型、引用类型（数组）**，它们的描述规则分别如下所示：
+
+1)、原始数据类型
+
+Java 类型的 `byte 、char、short、int、long、float、double、boolean` => `B、C、S、I、J、F、D、Z`。
+
+2）、引用类型数据
+
+ClassName => `L + 全路径类名（其中的 "." 替换为 "/" ,最后加分号）` ,例如 String => `Ljava/lang/String；`
+
+3）、数组（引用类型）
+
+不同类型的数组 => "[该类型对应的描述名" ，例如 `int 数组 => [I` , `String 数组 => [Ljava/lang/String;` ,`二维数组 int 数组 => [[I`。
+
+# 2、成员变量
+
+在 JVM 规范之中，成员变量即 Field Descriptor 的描述规则如下所示：
+
+# 3、成员函数描述规则
+
+在 JVM 规范之中，成员函数即 Method Descriptor 的描述规则如下所示：
+
+在注释 1 处， **MethodDescripor 由两个部分组成，括号内是参数的数据类型描述符，表示 0 个或多个 ParameterDescriptor，最后是返回值类型数据描述。** **void 的描述符规则为 V**。例如 `void hello(String str)` 的函数 => `(Ljava/lang/String;)V` 
+
+可以看到，filed_info 与 method_info 都包含有 **访问标志、名字引用、描述信息、属性数量与存储属性** 的数据结构。对于 method_info 所描述的成员函数来说，它的内容经过编译之后得到 Java 字节码会保存在属性之中。
+
+注意 ：**类构造器为 \<clinit> 方法、 而实例构造器为 \<init>  方法**
+
+
+
+# 属性
+
+只要不与已有属性名重复，任何人 实现的编译器都可以向属性表中写入自己定义的属性信息，Java 虚拟机运行时会忽略掉它所不认识的属性
+
+**attribute_info** 的数据结构伪代码如下所示：
+
+```jvm 代码
+attribute_info{
+	u2 attribute_name_index;
+	u4 attribute_length;
+	u1 info[attribure_lenght];
+}
+```
+
+attribute_info 中的各个元素的含义如下所示：
+
+* attribute_name_index ： 为 CONSTANT_Utf8 类型的常量项索引，表示属性名
+* `attribute_lenght:` 属性的长度
+* `info:` 属性具体的内容
+
+## 1、attribute_name_index 
+
+attribute_name_index 所指向的 Utf-8 字符串即为属性名称，而 **属性的名称是被用来区分属性的。** 所有的属性名称如下所示：
+
+1）、`Code`  仅出现在 **method_info** 中，描述函数内容，即该函数内容编译后得到的虚拟机指令，try/catch 语句对应的异常处理表等待。
+
+2）、`Exceptions:` 当函数抛出异常或错误时， method_info 会保存此属性。
+
+3）、`Signature:` **JDK 1.5 中新增的属性，用于支持泛型情况下方法的签名，由于 Java 的泛型采用擦除来实现，为了避免类型信息上被擦除后导致签名混乱，需要这个属性来记录泛型中的相关信息。** 
+
+4）、`SourceFile:` 包含一个指向 Utf-8 常量项的索引，即 Class 对应的源码文件名。
+
+5）、`StackMapTable:` 在 JDK 1.6 发布后增加到 Class 文件规范中，这个是一个复杂的变长属性。
+
+6）、`LineNumberTable:` Java 源码的行号与字节码指令的对应关系。
+
+7）、`LocalVariableTable:` 方法的局部变量描述。
+
+8）、`LocalVriableTypeTable`: JDK 1.5 中新增的属性，它使用特征签名代替描述符，是为了引入泛型语法之后能描述泛型参数化类型而添加的。
+
+上述表格中，我们可以发现，不同类型的属性可能会出现在 ClassFile 中不同的成员变量，**当 JVM 在解析 Class 文件时会效验 Class 成员应该禁止携带有哪些类型的属性。** 此外 **属性也可以包含子属性，例如 Code 属性中包含有 LocalVariableTable**。
+
+# 2、Code_attribute
+
+首先，要注意 **并非所有的方法都必须存在这个属性，例如接口或抽象类中的方法就不存在 Code 属性。**
+
+Code_attribute 的数据结构伪代码如下所示：
+
+```
+Code_attribute{
+	u2 attribute_name_index;
+	u2 attribute_lenght;
+	u2 max_stack;
+	u2 max_locals;
+	u4 code_length;
+	u1 code[code_length];
+	u2 exception_table_length;
+	
+	{
+		u2 start_pc;
+		u2 end_pc;
+		u2 handler_pc;
+		u2 catch_type;
+	}exception_table[exception_table_length];
+	
+	u2 attributes_count;
+	attribute_info attributes[attributes_count];
+}
+```
+
+JVM 在执行方法时，每个方法在执行的同时都会创建一个栈帧（Stack Frame）用于存储局部变量表、操作数栈、动态链接、方法出口等信息。每个方法从调用直至执行完成的过程，就对应着一个栈帧在虚拟机栈中入栈到出栈的过程。
+
+1. `max_stack:` 代表了 **操作数栈（Operand Stacks）** 深度的最大值。在方法执行的任意时刻，操作数栈都不会超过这个深度。虚拟机在运行时需要根据这个值来分配栈帧（Stack Frame）中操作栈深度。
+2. `max_locals:` 代表局部变量表所需的存储空间。max_locals 的单位是 Slot（内存大小单位），Slot 是虚拟机为局部变量分配内存所使用的最小单位。对于 byte、char、short、int、float、boolean 和 returnAddress 等长度不超过 32 位的数据类型，每个局部变量占用 1 个 Slot，而 double 和 long 这两种 64 位的数据类型则需要 2 个 Slot 来存放。方法参数（**包含实例方法中隐藏的 this**）、显示异常处理器的参数（Exception Handler Parameter，就是 try-catch 语句中的 catch 块所定义的异常）、方法体中定义的局部变量都需要局部变量表来存放。
+3. `code_length:` 方法编译后的字节码长度。
+4. `code:` 用于存储字节码指令的一系列字节流。既然叫字节码，那么每个指令就是 u1 类型的单字节。一个 u1 数据类型的取值范围为 0x00 - 0xFF，对应 0 - 255 ,也就是一共可以表达 256 条指令。
+5. `exception_table_length:` 表示 exception_table 的长度。
+6. `exception_table:` 每个成员为一个 ExceptionHandler ,并且一个函数可以包含多个 try-catch 语句，一个 try-catch 语句对应 exception_table 数组中的一项。
+
+7. `start_pc, end_pc：` 如果当字节码在 [`start_pc`,`end_pc`) 之间出现类型为 `catch_type` 或其子类的异常（`catch_type` 为指向一个 CONSTANT_Class_info 型常量索引），则转到 第 handler_pc 行处理。
+8. `handler_pc:` 表示 ExceptionHandler 的起点，为 code[] 的索引值。
+9. `catch_type:` 为 CONSTANT_Class 类型常量项的索引，表示处理的异常类型。当 `catch_type` 值为 0 时，代表任意异常情况都需要转向到 `handler_pc` 处进程处理。此外，编译器使用异常表而不是简单的跳转命令来实现 Java 异常及 finally 处理机制。
+
+
+
+### JVM 指令码
+
+我们了解 **常量池、属性、field_info、method_info** 等等一系列的源码文件组成结构中，**它们仅仅是一种静态的内容，这些信息并不能驱使 JVM 执行我们在源码中编写的函数。**
+
+从前面可知，Code_attribute 中的 code 数组存储了一个函数源码经过编译后得到的 JVM 字节码，其中仅包含如下 **两种** 类型的信息：
+
+* 1）、	JVM 指令码： **用于指示 JVM 执行的动作，例如加操作、减操作、new 对象。其长度为 1 个字节，所以 JVM 指令码的个数不会超过 255 个（0xFF）。**
+* 2）、JVM 指令码后的零至多个操作数： **操作数可以存储在 code 数组中，也可以存储在操作数栈（Operand Stack）中。**
+
+**一个 Code 数组里指令和参数的组织格式** 如下所示：
+
+`1 字节指令码  0或多个参数（N字节 N>=0）`
+
+可以看到，Java 虚拟机的指令由一个字节长度的，代表着某种特定操作含义的数字（称为操作码，Opcode）以及跟随其后的零至多个代表此操作所需参数（称为操作数，Operands）而构成。此外大多数指令都不包含操作数，只有一个操作码。
+
+如果不考虑异常处理的话，那么 Java 虚拟机的解释器可以使用下面这个伪代码当做 **最基础的执行模型** 来理解，如下所示：
+
+```java
+do{
+    自动计算 PC 寄存器的值加 1；
+    根据PC寄存器的指示位置，从字节码流中取出操作码；
+    if(字节码存在操作数)从字节码流中取出操作数；
+    执行操作码所定义的操作；
+}while(字节码流长度 > 0)
+```
+
+由于 Java 虚拟机的操作码长度只有一个字节，所以 Java 虚拟机的指令集 **对于特定的操作只提供有限的类型相关指令去支持它。** 例如 **在 JVM 中，大部分的指令都没有支持整数类型 byte、char 和 short，甚至没有任何指令支持 boolean 类型。因此，我们在处理 boolean 、byte、short 和 char 类型的数组时，需要转换为与之对应的 int 类型的字节码指令来处理。**
+
+众所周知，JVM 是基于栈而非寄存器的计算模型，并且，基于栈的实现能够带来很好的跨平台特性，因为寄存器指令往往和硬件挂钩。但是，**由于栈是一个 FILO 的结构，因此，对于同样的操作，基于栈的实现需要更多指令才能完成。此外，由于 JVM 需要实现跨平台特性，因此栈是在内存实现的，而寄存器则位于 CPU 的高速缓存区，因此，基于栈的实现其实速度相比寄存器的实现要慢的很多。要深入了解 JVM 的指令集，我们就必须从 JVM 运行时的栈帧讲起。**
+
+## 1、运行时的栈帧
+
+**栈帧（Stack Frame）是用于支持虚拟机进行方法调用和方法执行的数据结构，它是虚拟机运行时数据区的虚拟机栈（Virtual Machine Stack）的栈元素。**
+
+栈帧中存储了方法的  **局部变量表、操作数栈、动态链接和方法返回地址、栈数据区** 等信息。**每个方法从调用开始至执行完成的过程，都对应着一个栈帧在虚拟机栈里面从入栈到出栈的过程。**
+
+一个线程中的方法调用链可能会很长，很多方法都同时处于执行状态。**对于 JVM 的执行引擎来说，在活动线程中，只有位于栈顶的栈帧才是有效的，称为当前栈帧（Current Stack Frame）,与这个栈帧相关联的方法称为 当前方法（Current Method）。执行引擎运行的所有字节码指令都值针对当前栈帧进行操作，** 而 **栈帧的结构** 如下图：
+
+<img src="https://note-austen-1256667106.cos.ap-beijing.myqcloud.com/20201021182308.png" style="zoom: 80%;" />
+
+
+
+Java 中一个方法调用时会产生一个栈帧（Stack Frame），而此方法便位于栈帧之内。而 Java 方法的栈帧 主要包含 3 个部分：
+
+1. 局部变量表
+2. 操作数栈
+3. 栈帧数据区（常量池引用）
+
+栈帧数据区，即常量池引用在前面我们已经深入了解过了，但是还有两个重要部分我们需要了解，一个是操作数栈，另一个是局部变量区。通常来说，**程序需要将局部变量表的元素加载到操作数栈中，计算完成之后，然后再存储会局部变量表。**
+
+下面我们来看一操作数栈是怎么运转的。
+
+## 2、操作数栈
+
+操作数栈为了 **存放计算的操作数和返回结果。在执行每一条指令前，JVM 要求该指令的操作数已经被压入到操作数栈中，并且，在执行指令时，JVM 会将所需要的操作数弹出，并将计算结果压入操作数栈中。**
+
+对于操作数栈相关的指令有如下 **三类：**
+
+**1）、直接作用于操作数栈的指令：**
+
+* `dup:` 复制栈顶元素，常用于复制 new 指令所生成的未初始化的引用。
+* `pop:` 舍弃栈顶元素，常用于舍弃调用指令的返回结果。

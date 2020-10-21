@@ -5,7 +5,7 @@
 3. Looper 和 MessageQueue 有什么区别吗？
 4. MessageQueue 是怎么创建的？
 
-子线程的 Looper 是一个退出的，并且子线程的 Looper 是要自己 prepare 的， 主线程的 Looper 不能退出的，主线程的 Looper 在进程启动的时候就创建好了。
+子线程的 Looper 是可以退出的，并且子线程的 Looper 是要自己 prepare 的， 主线程的 Looper 不能退出的，主线程的 Looper 在进程启动的时候就创建好了。
 
 Java 层 Looper 里面是包含一个 MessageQueue 的，它们是一对一的关系，但是在 native 层 NativeMessageQueue 是包含一个 Looper 的，也是一对一的关系。
 
